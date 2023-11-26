@@ -9,6 +9,7 @@ import random
 global sub_nodes, sub_members
 sub_nodes = []
 sub_members = []  
+print("lol")
 
 
 class Reaction:
