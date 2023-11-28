@@ -438,3 +438,7 @@ while running:
 
 # Quit Pygame
 pygame.quit()
+
+
+def goodFunction():
+    print("Nice")
