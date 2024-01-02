@@ -171,7 +171,7 @@ def calculations(nodes, members):
         node.dof = [dof, dof+1, dof+2]
         allDel += node.dof
         dof += 3
-    
+    print('lol')
     str_stiffness = np.matrix([[0] * len(allDel)] * len(allDel), dtype=float)
 
     for member in members:

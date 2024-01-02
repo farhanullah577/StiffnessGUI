@@ -42,7 +42,7 @@ class Main_Button:
             else:
                 self.color = MENUBAR_COLOR
         
-             
+        print('lol')     
         pygame.draw.rect(screen, self.color, self.rect)        
         # pygame.draw.rect(screen, BLACK, self.rect, 5)
         # Create a font
