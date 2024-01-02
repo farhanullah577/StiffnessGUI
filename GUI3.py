@@ -670,7 +670,7 @@ while running:
         end_pos = aF.snap_to_45_degree_angle(start_point.screen, end_pos)
         pygame.draw.line(screen, BLUE, start_point.screen, end_pos, 2)
     
-    
+    print("Lol")
 
     
     # Blit the info screen onto the main screen
