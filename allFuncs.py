@@ -275,7 +275,7 @@ class Member:
 
         # Draw the text
         screen.blit(text_surface, text_rect)
-    print('lol')
+    
     def draw(self, screen):
         pygame.draw.line(screen, self.color, self.start_node.screen, self.end_node.screen, 2)
 

@@ -78,7 +78,7 @@ class Dist_Load:
         self.parent = parent
         self.color = RED
 
-    print('lol')
+    
     
     def draw(self, screen, scale):
         start_arrow_length = 50
