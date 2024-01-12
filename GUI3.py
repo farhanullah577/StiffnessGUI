@@ -628,7 +628,9 @@ while running:
                 members = aF.pre_def()
             elif event.key == pygame.K_F2:
                 members = aF.pre_def2()
-                # cL.calculations(aF.nodes, members)
+                reactions = cL.calculations(aF.nodes, members)
+                scene = 999
+                calcs_done = True
             
                 
 
@@ -659,8 +661,8 @@ while running:
                 [reaction.draw(screen) for reaction in reactions]
             # if len(cL.sub_nodes) > 0:
             #     [node.draw(screen) for node in cL.sub_nodes]
-            # if len(reactions) > 0:
-            #     [reaction.draw(screen) for reaction in reactions]
+            if len(reactions) > 0:
+                [reaction.draw(screen) for reaction in reactions]
             if scene != 999:
                 calcs_done = False
     

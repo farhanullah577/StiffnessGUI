@@ -670,6 +670,7 @@ def pre_def2():
     members[2].end_node.Fx = "Rx"
     members[2].end_node.Fy = "Ry"
     members[2].end_node.Mu = "Mu"
+    members[1].uvl.append(loads.Dist_Load(1, 'uvl', 5, 10, 290, 4, 10, members[1]))
     return members
 
 def make_buttons(button_text, sub_button_texts):
