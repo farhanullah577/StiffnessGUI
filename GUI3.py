@@ -626,6 +626,7 @@ while running:
             
             elif event.key == pygame.K_F1:
                 members = aF.pre_def()
+                
             elif event.key == pygame.K_F2:
                 members = aF.pre_def2()
                 reactions = cL.calculations(aF.nodes, members)
@@ -672,9 +673,7 @@ while running:
         end_pos = aF.snap_to_45_degree_angle(start_point.screen, end_pos)
         pygame.draw.line(screen, BLUE, start_point.screen, end_pos, 2)
     
-    
-
-    
+       
     # Blit the info screen onto the main screen
     screen.blit(info_screen, (0, 0))
     update_info_screen()

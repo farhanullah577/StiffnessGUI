@@ -215,6 +215,8 @@ class Member:
             rby += force.mag * math.sin(f_angle) * a / self.length
             ma +=  force.mag* math.sin(f_angle) * a * (b ** 2) / self.length ** 2
             mb +=  force.mag* math.sin(f_angle) * a ** 2 * b * -1 / self.length ** 2
+            ray += (ma + mb) / self.length
+            rby -= (ma + mb) / self.length
         
         #All Distributed Loads in one array
         DLs = self.udl + self.uvl
@@ -241,27 +243,41 @@ class Member:
                 w2 = force.end_mag
                 case = 3
             f_angle = math.radians(get_angle(force.angle, self.angle))
-            if case == 1:
+            if case == 1 or case == 3:
                 ray += (1/20) * w2 * math.sin(f_angle) * s2 * ((3*s2**3 + 5*s2**2*s1 + 10*s3**3 + 30*s3**2*s2 + 30*s3**2*s1 + 15*s2**2*s3 + 20*s3*s2*s1) / ((s1+s2+s3)**3)) + (1/20) * (w1 * math.sin(f_angle) *s2) * ((7*s2**3 + 15*s2**2*s1 + 10*s3**3 + 30*s3**2*s2 + 30*s3**2*s1 + 25*s2**2*s3+40*s3*s2*s1) / (s3+s2+s1)**3)
-                print(ray)
+                # print(ray)
                 rby += (1/20) * w1 * math.sin(f_angle) * s2 * ((3*s2**3 + 5*s2**2*s3 + 10*s1**3 + 30*s1**2*s2 + 30*s1**2*s3 + 15*s2**2*s1 + 20*s1*s2*s3) / ((s1+s2+s3)**3)) + (1/20) * (w2 * math.sin(f_angle) * s2) * ((7*s2**3 + 15*s2**2*s3 + 10*s1**3 + 30*s1**2*s2 + 30*s1**2*s3 + 25*s2**2*s1 + 40*s1*s2*s3) / (s3+s2+s1)**3)            
-                print(rby)
+                # print(rby)
                 rax += (1/20) * w2 * math.cos(f_angle) * s2 * ((3*s2**3 + 5*s2**2*s1 + 10*s3**3 + 30*s3**2*s2 + 30*s3**2*s1 + 15*s2**2*s3 + 20*s3*s2*s1) / ((s1+s2+s3)**3)) + (1/20) * (w1 * math.cos(f_angle) *s2) * ((7*s2**3 + 15*s2**2*s1 + 10*s3**3 + 30*s3**2*s2 + 30*s3**2*s1 + 25*s2**2*s3+40*s3*s2*s1) / (s3+s2+s1)**3)
-                print(rax)
+                # print(rax)
                 rbx += (1/20) * w1 * math.cos(f_angle) * s2 * ((3*s2**3 + 5*s2**2*s3 + 10*s1**3 + 30*s1**2*s2 + 30*s1**2*s3 + 15*s2**2*s1 + 20*s1*s2*s3) / ((s1+s2+s3)**3)) + (1/20) * (w2 * math.cos(f_angle) * s2) * ((7*s2**3 + 15*s2**2*s3 + 10*s1**3 + 30*s1**2*s2 + 30*s1**2*s3 + 25*s2**2*s1 + 40*s1*s2*s3) / (s3+s2+s1)**3)            
-                print(rbx)
+                # print(rbx)
                 ma += (1/60) * w1 * math.sin(f_angle) * s2 * ((3*s2**3 + 15*s2**2*s1 + 10*s3**2*s2 + 30*s3**2*s1 + 10*s2**2*s3 + 40*s3*s2*s1) / (s1+s2+s3)**2) + (1/60) * w2 * math.sin(f_angle) * s2 * ((2*s2**3 + 5*s2**2*s1 + 20*s3**2*s2 + 30*s3**2*s1 + 10*s2**2*s3 + 20*s2*s3*s1) / (s3+s2+s1)**2)
-                print(ma)
+                # print(ma)
                 mb += (-1/60) * w2 * math.sin(f_angle) * s2 * ((3*s2**3 + 15*s2**2*s3 + 10*s1**2*s2 +30*s1**2*s3 + 10*s2**2*s1 + 40*s2*s1*s3) / (s1+s2+s3)**2) + (-1/60) * w1 * math.sin(f_angle) * s2 * ((2*s2**3 + 5*s2**2*s3 + 20*s1**2*s2 + 30*s1**2*s3 + 10*s2**2*s1 + 20*s1*s2*s3) / (s1+s2+s3)**2)
-                print(mb) 
+                # print(mb)  
+            if case == 2:
+                rby += (1/20) * w2 * math.sin(f_angle) * s2 * ((3*s2**3 + 5*s2**2*s1 + 10*s3**3 + 30*s3**2*s2 + 30*s3**2*s1 + 15*s2**2*s3 + 20*s3*s2*s1) / ((s1+s2+s3)**3)) + (1/20) * (w1 * math.sin(f_angle) *s2) * ((7*s2**3 + 15*s2**2*s1 + 10*s3**3 + 30*s3**2*s2 + 30*s3**2*s1 + 25*s2**2*s3+40*s3*s2*s1) / (s3+s2+s1)**3)
+                # print(ray)
+                ray += (1/20) * w1 * math.sin(f_angle) * s2 * ((3*s2**3 + 5*s2**2*s3 + 10*s1**3 + 30*s1**2*s2 + 30*s1**2*s3 + 15*s2**2*s1 + 20*s1*s2*s3) / ((s1+s2+s3)**3)) + (1/20) * (w2 * math.sin(f_angle) * s2) * ((7*s2**3 + 15*s2**2*s3 + 10*s1**3 + 30*s1**2*s2 + 30*s1**2*s3 + 25*s2**2*s1 + 40*s1*s2*s3) / (s3+s2+s1)**3)            
+                # print(rby)
+                rbx += (1/20) * w2 * math.cos(f_angle) * s2 * ((3*s2**3 + 5*s2**2*s1 + 10*s3**3 + 30*s3**2*s2 + 30*s3**2*s1 + 15*s2**2*s3 + 20*s3*s2*s1) / ((s1+s2+s3)**3)) + (1/20) * (w1 * math.cos(f_angle) *s2) * ((7*s2**3 + 15*s2**2*s1 + 10*s3**3 + 30*s3**2*s2 + 30*s3**2*s1 + 25*s2**2*s3+40*s3*s2*s1) / (s3+s2+s1)**3)
+                # print(rax)
+                rax += (1/20) * w1 * math.cos(f_angle) * s2 * ((3*s2**3 + 5*s2**2*s3 + 10*s1**3 + 30*s1**2*s2 + 30*s1**2*s3 + 15*s2**2*s1 + 20*s1*s2*s3) / ((s1+s2+s3)**3)) + (1/20) * (w2 * math.cos(f_angle) * s2) * ((7*s2**3 + 15*s2**2*s3 + 10*s1**3 + 30*s1**2*s2 + 30*s1**2*s3 + 25*s2**2*s1 + 40*s1*s2*s3) / (s3+s2+s1)**3)            
+                # print(rbx)
+                mb += (1/60) * w1 * math.sin(f_angle) * s2 * ((3*s2**3 + 15*s2**2*s1 + 10*s3**2*s2 + 30*s3**2*s1 + 10*s2**2*s3 + 40*s3*s2*s1) / (s1+s2+s3)**2) + (1/60) * w2 * math.sin(f_angle) * s2 * ((2*s2**3 + 5*s2**2*s1 + 20*s3**2*s2 + 30*s3**2*s1 + 10*s2**2*s3 + 20*s2*s3*s1) / (s3+s2+s1)**2)
+                # print(ma)
+                ma += (-1/60) * w2 * math.sin(f_angle) * s2 * ((3*s2**3 + 15*s2**2*s3 + 10*s1**2*s2 +30*s1**2*s3 + 10*s2**2*s1 + 40*s2*s1*s3) / (s1+s2+s3)**2) + (-1/60) * w1 * math.sin(f_angle) * s2 * ((2*s2**3 + 5*s2**2*s3 + 20*s1**2*s2 + 30*s1**2*s3 + 10*s2**2*s1 + 20*s1*s2*s3) / (s1+s2+s3)**2)
+                # print(mb) 
+                             
         
-        ray += (ma + mb) / self.length
-        rby -= (ma + mb) / self.length
+        # ray += (ma + mb) / self.length
+        # rby -= (ma + mb) / self.length
 
         rax, ray = transform_force(ray, rax)
         rbx, rby = transform_force(rby, rbx)
 
-        self.FER = np.array([-rax, ray, ma, -rbx, rby, mb], dtype=float)
+        self.FER = np.array([rax, ray, ma, rbx, rby, mb], dtype=float)
     
 
     def display_id(self, screen):
@@ -652,16 +668,16 @@ def pre_def():
 
 def pre_def2():
     global nodes
-    node1 = (500, 400)
-    node2 = (500, 200)
-    node3 = (700, 200)
-    node4 = (700, 400)
+    node1 = (400, 400)
+    node2 = (400, 200)
+    node3 = (600, 200)
+    node4 = (600, 400)
     nodes = [Node(1, node1), Node(2, node2), Node(3, node3), Node(4, node4)]
     members = [Member(1, nodes[0], nodes[1], YELLOW), Member(2, nodes[1], nodes[2], YELLOW), Member(3, nodes[2], nodes[3], YELLOW)]
     for member in members:
-        member.update_I(1e-4)
-        member.update_E(2e11)
-        member.update_A(0.05)
+        member.update_I(3.255e-4)
+        member.update_E(449570.7)
+        member.update_A(0.0625)
     members[0].start_node.support = "Fix"
     members[0].start_node.Fx = "Rx"
     members[0].start_node.Fy = "Ry"

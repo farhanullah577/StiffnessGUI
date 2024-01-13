@@ -31,7 +31,7 @@ class Reaction:
             text_loc = (self.node.screen[0]+50, self.node.screen[1]-25)
         else:
             arr = [(x+35, y), (x+25, y+5), (x+25, y-5)]
-            text_loc = (self.node.screen[0]+50, self.node.screen[1]-25)
+            text_loc = (self.node.screen[0]+70, self.node.screen[1]-25)
         pygame.draw.polygon(screen, green, arr)
 
         # Create a font
