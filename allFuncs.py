@@ -624,6 +624,9 @@ def add_point_forces(active, _members):
             else:
                 active_force.mag = magnitude
                 active_force.angle = angle
+                if distFromA > active_member.length:
+                    distFromA = active_member.length
+                    messagebox.showinfo("Error", "Ta che kam Location raku da aghy pa hisab sta da force da member na bahar rauzi, za ye darta pa gut ke lagom, bya ye pakhpala edit kawa. Merabani.")
                 active_force.loc = distFromA
                 active_force.screen = calculate_force_point(active_member.start_node.screen, active_member.angle, distFromA)
 
