@@ -1,6 +1,6 @@
 import math
 import tkinter as tk
-from tkinter import Entry, Button, Checkbutton, BooleanVar
+from tkinter import Entry, Button, Checkbutton, BooleanVar, messagebox
 import pygame
 import numpy as np
 import loads
@@ -460,7 +460,9 @@ def edit_members(active, _members):
             end_screen = (end_x, end_y)
             end_global = s2g(end_screen)
             return end_screen, end_global
-
+        
+        old_length = active_member.length
+        
         active_member.length = __length
         active_member.angle = __angle
         end_screen, end_global = get_new_point(active_member.start_node, active_member.length, active_member.angle)
@@ -479,13 +481,14 @@ def edit_members(active, _members):
         
         [member.calculate_length_and_angle() for member in members if member != active_member]
         [member.calculate_mid() for member in members]
-
-        for member in members:
-            if len(member.point_forces) >0:
-                for force in member.point_forces:
-                    if force.loc >= member.length:
-                        force.loc = member.length
-                    force.screen = calculate_force_point(member.start_node.screen, member.angle, force.loc)
+        adjusted = False
+        for force in active_member.point_forces:
+            ratio = force.loc / old_length
+            force.loc = ratio * active_member.length
+            force.screen = calculate_force_point(active_member.start_node.screen, active_member.angle, force.loc)
+            adjusted = True
+        if adjusted:
+            messagebox.showinfo("Info", "Point Forces me da zarry lenght-to-force location ratio pa hisab adjust krral.")
 
         if change_A.get():
             [member.update_A(area) for member in members]
@@ -611,6 +614,9 @@ def add_point_forces(active, _members):
             angle = round(float(_angle),3)
             distFromA = round(float(_distFromA),3)
             if active_force == None:
+                if distFromA > active_member.length:
+                    distFromA = active_member.length
+                    messagebox.showinfo("Error", "Ta che kam Location raku da aghy pa hisab sta da force da member na bahar rauzi, za ye darta pa gut ke lagom, bya ye pakhpala edit kawa. Merabani.")
                 no = len(active_member.point_forces)+1
                 point_Of_Force = calculate_force_point(active_member.start_node.screen, active_member.angle, distFromA)
                 active_member.point_forces.append(loads.Point_Force(no, active_member.start_node, angle, distFromA, magnitude, point_Of_Force))
