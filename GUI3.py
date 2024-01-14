@@ -501,46 +501,65 @@ while running:
                 offset[1] = y
 
             elif event.button == 4:  # Scroll up to zoom in
-                GLOBAL_SCALE *= d_scale
-                if not calcs_done:
-                    [node.zoomIn_coods(event.pos, d_scale) for node in aF.nodes]
-                    for member in members:
-                        if len(member.point_forces) > 0:
-                            [force.zoomIn_coods(event.pos, d_scale) for force in member.point_forces]
-                    GLOBAL_CENTER = members[0].start_node.screen
-                    aF.transfer_vars(GLOBAL_SCALE, GLOBAL_CENTER, HEIGHT)
-                else:
-                    [node.zoomIn_coods(event.pos, d_scale) for node in cL.sub_nodes]
-                    for member in cL.sub_members:
-                        if len(member.point_forces) > 0:
-                            [force.zoomIn_coods(event.pos, d_scale) for force in member.point_forces]
-                    for member in members:
-                        if len(member.point_forces) > 0:
-                            [force.zoomIn_coods(event.pos, d_scale) for force in member.point_forces]
-                    
-                    GLOBAL_CENTER = members[0].start_node.screen
-                    aF.transfer_vars(GLOBAL_SCALE, GLOBAL_CENTER, HEIGHT)
-                    
-
+                if len(members) > 0:
+                    GLOBAL_SCALE *= d_scale
+                    if not calcs_done:
+                        [node.zoomIn_coods(event.pos, d_scale) for node in aF.nodes]
+                        for member in members:
+                            if len(member.point_forces) > 0:
+                                [force.zoomIn_coods(event.pos, d_scale) for force in member.point_forces]
+                        GLOBAL_CENTER = members[0].start_node.screen
+                        aF.transfer_vars(GLOBAL_SCALE, GLOBAL_CENTER, HEIGHT)
+                    else:
+                        #If sub members wala khata
+                        # [node.zoomIn_coods(event.pos, d_scale) for node in cL.sub_nodes]
+                        # for member in cL.sub_members:
+                        #     if len(member.point_forces) > 0:
+                        #         [force.zoomIn_coods(event.pos, d_scale) for force in member.point_forces]
+                        # for member in members:
+                        #     if len(member.point_forces) > 0:
+                        #         [force.zoomIn_coods(event.pos, d_scale) for force in member.point_forces]
+                        
+                        # GLOBAL_CENTER = members[0].start_node.screen
+                        # aF.transfer_vars(GLOBAL_SCALE, GLOBAL_CENTER, HEIGHT)
+                        
+                        #Else
+                        [node.zoomIn_coods(event.pos, d_scale) for node in aF.nodes]
+                        for member in members:
+                            if len(member.point_forces) > 0:
+                                [force.zoomIn_coods(event.pos, d_scale) for force in member.point_forces]
+                        GLOBAL_CENTER = members[0].start_node.screen
+                        aF.transfer_vars(GLOBAL_SCALE, GLOBAL_CENTER, HEIGHT)
+                        
             elif event.button == 5:  # Scroll down to zoom out
-                GLOBAL_SCALE /= d_scale
-                if not calcs_done:
-                    [node.zoomOut_coods(event.pos, d_scale) for node in aF.nodes]
-                    for member in members:
-                        if len(member.point_forces) > 0:
-                            [force.zoomOut_coods(event.pos, d_scale) for force in member.point_forces]
-                    GLOBAL_CENTER = members[0].start_node.screen
-                    aF.transfer_vars(GLOBAL_SCALE, GLOBAL_CENTER, HEIGHT)
-                else:
-                    [node.zoomOut_coods(event.pos, d_scale) for node in cL.sub_nodes]
-                    for member in cL.sub_members:
-                        if len(member.point_forces) > 0:
-                            [force.zoomOut_coods(event.pos, d_scale) for force in member.point_forces]
-                    for member in members:
-                        if len(member.point_forces) > 0:
-                            [force.zoomOut_coods(event.pos, d_scale) for force in member.point_forces]
-                    GLOBAL_CENTER = members[0].start_node.screen
-                    aF.transfer_vars(GLOBAL_SCALE, GLOBAL_CENTER, HEIGHT)
+                if len(members) > 0:
+                    GLOBAL_SCALE /= d_scale
+                    if not calcs_done:
+                        [node.zoomOut_coods(event.pos, d_scale) for node in aF.nodes]
+                        for member in members:
+                            if len(member.point_forces) > 0:
+                                [force.zoomOut_coods(event.pos, d_scale) for force in member.point_forces]
+                        GLOBAL_CENTER = members[0].start_node.screen
+                        aF.transfer_vars(GLOBAL_SCALE, GLOBAL_CENTER, HEIGHT)
+                    else:
+                        #If sub members wala khata
+                        # [node.zoomOut_coods(event.pos, d_scale) for node in cL.sub_nodes]
+                        # for member in cL.sub_members:
+                        #     if len(member.point_forces) > 0:
+                        #         [force.zoomOut_coods(event.pos, d_scale) for force in member.point_forces]
+                        # for member in members:
+                        #     if len(member.point_forces) > 0:
+                        #         [force.zoomOut_coods(event.pos, d_scale) for force in member.point_forces]
+                        # GLOBAL_CENTER = members[0].start_node.screen
+                        # aF.transfer_vars(GLOBAL_SCALE, GLOBAL_CENTER, HEIGHT)
+                        
+                        #Else
+                        [node.zoomOut_coods(event.pos, d_scale) for node in aF.nodes]
+                        for member in members:
+                            if len(member.point_forces) > 0:
+                                [force.zoomOut_coods(event.pos, d_scale) for force in member.point_forces]
+                        GLOBAL_CENTER = members[0].start_node.screen
+                        aF.transfer_vars(GLOBAL_SCALE, GLOBAL_CENTER, HEIGHT)
                     
 
         elif event.type == pygame.MOUSEMOTION:
@@ -557,23 +576,35 @@ while running:
                     GLOBAL_CENTER = members[0].start_node.screen
                     [member.calculate_mid() for member in members]
             else:
-                if panning:
+                if panning and len(members) > 0:
+                    #If submembers wala khata
+                    # x, y = event.pos
+                    # offset_x = x - offset[0]
+                    # offset_y = y - offset[1]
+                    # offset = [x, y]
+                    # [node.pan(offset_x, offset_y) for node in cL.sub_nodes]
+                    # [member.calculate_mid() for member in cL.sub_members]
+                    # [member.calculate_mid() for member in members]
+                    # for member in cL.sub_members:
+                    #     if len(member.point_forces) > 0:
+                    #         [force.pan(offset_x, offset_y) for force in member.point_forces]
+                    # for member in members:
+                    #     if len(member.point_forces) > 0:
+                    #         [force.pan(offset_x, offset_y) for force in member.point_forces]
+                    # GLOBAL_CENTER = members[0].start_node.screen
+                    # [member.calculate_mid() for member in cL.sub_members]
+                    
+                    #Else
                     x, y = event.pos
                     offset_x = x - offset[0]
                     offset_y = y - offset[1]
                     offset = [x, y]
-                    
-                    [node.pan(offset_x, offset_y) for node in cL.sub_nodes]
-                    [member.calculate_mid() for member in cL.sub_members]
-                    [member.calculate_mid() for member in members]
-                    for member in cL.sub_members:
-                        if len(member.point_forces) > 0:
-                            [force.pan(offset_x, offset_y) for force in member.point_forces]
+                    [node.pan(offset_x, offset_y) for node in aF.nodes]
                     for member in members:
                         if len(member.point_forces) > 0:
                             [force.pan(offset_x, offset_y) for force in member.point_forces]
                     GLOBAL_CENTER = members[0].start_node.screen
-                    [member.calculate_mid() for member in cL.sub_members]
+                    [member.calculate_mid() for member in members]
 
         elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == 2:
