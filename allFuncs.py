@@ -305,10 +305,7 @@ class Member:
             for force in self.uvl:
                 force.draw(screen, GLOBAL_SCALE)
 
-
-                    
-        
-        
+       
     
 def s2g(screen_pos):
     # Convert screen coordinates to global coordinates
@@ -649,13 +646,9 @@ def pre_def():
     nodes = [Node(1, node1), Node(2, node2), Node(3, node3), Node(4, node4)]
     members = [Member(1, nodes[0], nodes[1], YELLOW), Member(2, nodes[1], nodes[2], YELLOW), Member(3, nodes[2], nodes[3], YELLOW)]
     for member in members:
-        member.update_I(1e-4)
-        member.update_E(2e11)
-        member.update_A(0.05)
-    
-    # point_Of_Force = calculate_force_point(members[1].start_node.screen, members[1].angle, 6)    
-    # members[1].point_forces.append(loads.Point_Force(1, members[1].start_node, -90, 6, 40, point_Of_Force))
-    # members[1].calculate_FER()
+        member.update_I(3.255e-4)
+        member.update_E(449570.7)
+        member.update_A(0.0625)
     members[0].start_node.support = "Fix"
     members[0].start_node.Fx = "Rx"
     members[0].start_node.Fy = "Ry"

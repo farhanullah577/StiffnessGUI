@@ -77,8 +77,8 @@ main_buttons = aF.make_buttons(button_text, sub_button_texts)
 global active_member, active_node, node_no
 
 def check_status(button):
-    
     text = button.text
+                
     if text == "Draw":
         button.status = True
     elif text in ["Edit", "Fix", "Pin", "Roller"]:
@@ -119,7 +119,12 @@ def check_status(button):
             button.status = True
         else:
             button.status = False
-        
+    
+    if scene == 999:
+        if text != "Reset":
+            button.status = False
+        else:
+            button.status = True    
 
 def s2g(screen_pos):
     # Convert screen coordinates to global coordinates
