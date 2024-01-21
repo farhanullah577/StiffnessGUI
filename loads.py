@@ -151,4 +151,56 @@ class Dist_Load:
                     # Draw the text
                     screen.blit(text_surface, text_rect)
                        
-        
+class Moment:
+    def __init__(self, no, mag, dist_from_A, cood):
+        self.no = no
+        self.magnitude = mag
+        self.loc = dist_from_A
+        self.screen_cood = cood
+    
+    def pan(self, offset_x, offset_y):
+        self.screen_cood = (self.screen_cood[0] + offset_x, self.screen_cood[1] + offset_y)
+    
+    def zoomOut_coods(self, mouse_pos, d_scale):
+        center_x = mouse_pos[0]
+        center_y = mouse_pos[1]
+        old_x = self.screen_cood[0]
+        old_y = self.screen_cood[1]
+        new_x = center_x - (center_x - old_x) / d_scale
+        new_y = center_y - (center_y - old_y) / d_scale
+        self.screen_cood = (new_x, new_y)
+    
+    def zoomIn_coods(self, mouse_pos, d_scale):
+        center_x = mouse_pos[0]
+        center_y = mouse_pos[1]
+        old_x = self.screen_cood[0]
+        old_y = self.screen_cood[1]
+        new_x = center_x - (center_x - old_x) * d_scale
+        new_y = center_y - (center_y - old_y) * d_scale
+        self.screen_cood = (new_x, new_y)
+    
+    def draw_arc(self, screen):
+        green = (0, 255, 0)
+        x = self.screen_cood[0] - 25
+        y = self.screen_cood[1] - 25
+        pygame.draw.arc(screen, green, (*(x, y), 50, 50), math.radians(90), 0, width=1)
+        # pygame.draw.circle(screen, black, coordinate, 5)
+        if self.magnitude >= 0:
+            arr = [(x+48, y+20), (x+53, y+30), (x+43, y+30)]
+            text_loc = (self.screen_cood[0]+50, self.screen_cood[1]-25)
+        else:
+            arr = [(x+35, y), (x+25, y+5), (x+25, y-5)]
+            text_loc = (self.screen_cood[0]+70, self.screen_cood[1]-25)
+        pygame.draw.polygon(screen, green, arr)
+
+        # Create a font
+        font = pygame.font.Font(None, 25)
+
+        # Render the text
+        text_surface = font.render(f"{self.magnitude}", True, green)
+        text_rect = text_surface.get_rect()
+        text_rect.midright = text_loc
+
+
+        # Draw the text
+        screen.blit(text_surface, text_rect)

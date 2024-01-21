@@ -23,8 +23,7 @@ YELLOW = (255, 255, 0)
 BLUE = (0, 0, 255)
 
 SNAP_RADIUS = 20  # The radius for snapping in pixels
-ANGLE_INCREMENT = 1  # The angle increment for drawing lines
-
+ANGLE_INCREMENT = 45  # The angle increment for drawing lines
 
 
 def transfer_vars(scale, center, HEIGHT_):
@@ -104,8 +103,8 @@ class Node:
 
         # Draw the text
         screen.blit(text_surface, text_rect)
-    
-        
+
+
 class Member:
     def __init__(self, id, node1, node2, color, sub = False):
         self.id = id
@@ -245,34 +244,31 @@ class Member:
             f_angle = math.radians(get_angle(force.angle, self.angle))
             if case == 1 or case == 3:
                 ray += (1/20) * w2 * math.sin(f_angle) * s2 * ((3*s2**3 + 5*s2**2*s1 + 10*s3**3 + 30*s3**2*s2 + 30*s3**2*s1 + 15*s2**2*s3 + 20*s3*s2*s1) / ((s1+s2+s3)**3)) + (1/20) * (w1 * math.sin(f_angle) *s2) * ((7*s2**3 + 15*s2**2*s1 + 10*s3**3 + 30*s3**2*s2 + 30*s3**2*s1 + 25*s2**2*s3+40*s3*s2*s1) / (s3+s2+s1)**3)
-                # print(ray)
+                print(f"ray = {ray}")
                 rby += (1/20) * w1 * math.sin(f_angle) * s2 * ((3*s2**3 + 5*s2**2*s3 + 10*s1**3 + 30*s1**2*s2 + 30*s1**2*s3 + 15*s2**2*s1 + 20*s1*s2*s3) / ((s1+s2+s3)**3)) + (1/20) * (w2 * math.sin(f_angle) * s2) * ((7*s2**3 + 15*s2**2*s3 + 10*s1**3 + 30*s1**2*s2 + 30*s1**2*s3 + 25*s2**2*s1 + 40*s1*s2*s3) / (s3+s2+s1)**3)            
-                # print(rby)
+                print(f"rby = {rby}")
                 rax += (1/20) * w2 * math.cos(f_angle) * s2 * ((3*s2**3 + 5*s2**2*s1 + 10*s3**3 + 30*s3**2*s2 + 30*s3**2*s1 + 15*s2**2*s3 + 20*s3*s2*s1) / ((s1+s2+s3)**3)) + (1/20) * (w1 * math.cos(f_angle) *s2) * ((7*s2**3 + 15*s2**2*s1 + 10*s3**3 + 30*s3**2*s2 + 30*s3**2*s1 + 25*s2**2*s3+40*s3*s2*s1) / (s3+s2+s1)**3)
-                # print(rax)
+                print(f"rax = {rax}")
                 rbx += (1/20) * w1 * math.cos(f_angle) * s2 * ((3*s2**3 + 5*s2**2*s3 + 10*s1**3 + 30*s1**2*s2 + 30*s1**2*s3 + 15*s2**2*s1 + 20*s1*s2*s3) / ((s1+s2+s3)**3)) + (1/20) * (w2 * math.cos(f_angle) * s2) * ((7*s2**3 + 15*s2**2*s3 + 10*s1**3 + 30*s1**2*s2 + 30*s1**2*s3 + 25*s2**2*s1 + 40*s1*s2*s3) / (s3+s2+s1)**3)            
-                # print(rbx)
+                print(f"rbx = {rbx}")
                 ma += (1/60) * w1 * math.sin(f_angle) * s2 * ((3*s2**3 + 15*s2**2*s1 + 10*s3**2*s2 + 30*s3**2*s1 + 10*s2**2*s3 + 40*s3*s2*s1) / (s1+s2+s3)**2) + (1/60) * w2 * math.sin(f_angle) * s2 * ((2*s2**3 + 5*s2**2*s1 + 20*s3**2*s2 + 30*s3**2*s1 + 10*s2**2*s3 + 20*s2*s3*s1) / (s3+s2+s1)**2)
-                # print(ma)
+                print(f"ma = {ma}")
                 mb += (-1/60) * w2 * math.sin(f_angle) * s2 * ((3*s2**3 + 15*s2**2*s3 + 10*s1**2*s2 +30*s1**2*s3 + 10*s2**2*s1 + 40*s2*s1*s3) / (s1+s2+s3)**2) + (-1/60) * w1 * math.sin(f_angle) * s2 * ((2*s2**3 + 5*s2**2*s3 + 20*s1**2*s2 + 30*s1**2*s3 + 10*s2**2*s1 + 20*s1*s2*s3) / (s1+s2+s3)**2)
-                # print(mb)  
+                print(f"mb = {mb}")  
+                
             if case == 2:
                 rby += (1/20) * w2 * math.sin(f_angle) * s2 * ((3*s2**3 + 5*s2**2*s1 + 10*s3**3 + 30*s3**2*s2 + 30*s3**2*s1 + 15*s2**2*s3 + 20*s3*s2*s1) / ((s1+s2+s3)**3)) + (1/20) * (w1 * math.sin(f_angle) *s2) * ((7*s2**3 + 15*s2**2*s1 + 10*s3**3 + 30*s3**2*s2 + 30*s3**2*s1 + 25*s2**2*s3+40*s3*s2*s1) / (s3+s2+s1)**3)
-                # print(ray)
+                print(f"rby = {rby}")
                 ray += (1/20) * w1 * math.sin(f_angle) * s2 * ((3*s2**3 + 5*s2**2*s3 + 10*s1**3 + 30*s1**2*s2 + 30*s1**2*s3 + 15*s2**2*s1 + 20*s1*s2*s3) / ((s1+s2+s3)**3)) + (1/20) * (w2 * math.sin(f_angle) * s2) * ((7*s2**3 + 15*s2**2*s3 + 10*s1**3 + 30*s1**2*s2 + 30*s1**2*s3 + 25*s2**2*s1 + 40*s1*s2*s3) / (s3+s2+s1)**3)            
-                # print(rby)
+                print(f"ray = {ray}")
                 rbx += (1/20) * w2 * math.cos(f_angle) * s2 * ((3*s2**3 + 5*s2**2*s1 + 10*s3**3 + 30*s3**2*s2 + 30*s3**2*s1 + 15*s2**2*s3 + 20*s3*s2*s1) / ((s1+s2+s3)**3)) + (1/20) * (w1 * math.cos(f_angle) *s2) * ((7*s2**3 + 15*s2**2*s1 + 10*s3**3 + 30*s3**2*s2 + 30*s3**2*s1 + 25*s2**2*s3+40*s3*s2*s1) / (s3+s2+s1)**3)
-                # print(rax)
+                print(f"rbx = {rbx}")
                 rax += (1/20) * w1 * math.cos(f_angle) * s2 * ((3*s2**3 + 5*s2**2*s3 + 10*s1**3 + 30*s1**2*s2 + 30*s1**2*s3 + 15*s2**2*s1 + 20*s1*s2*s3) / ((s1+s2+s3)**3)) + (1/20) * (w2 * math.cos(f_angle) * s2) * ((7*s2**3 + 15*s2**2*s3 + 10*s1**3 + 30*s1**2*s2 + 30*s1**2*s3 + 25*s2**2*s1 + 40*s1*s2*s3) / (s3+s2+s1)**3)            
-                # print(rbx)
+                print(f"rax = {rax}")
                 mb += (1/60) * w1 * math.sin(f_angle) * s2 * ((3*s2**3 + 15*s2**2*s1 + 10*s3**2*s2 + 30*s3**2*s1 + 10*s2**2*s3 + 40*s3*s2*s1) / (s1+s2+s3)**2) + (1/60) * w2 * math.sin(f_angle) * s2 * ((2*s2**3 + 5*s2**2*s1 + 20*s3**2*s2 + 30*s3**2*s1 + 10*s2**2*s3 + 20*s2*s3*s1) / (s3+s2+s1)**2)
-                # print(ma)
+                print(f"mb = {mb}")
                 ma += (-1/60) * w2 * math.sin(f_angle) * s2 * ((3*s2**3 + 15*s2**2*s3 + 10*s1**2*s2 +30*s1**2*s3 + 10*s2**2*s1 + 40*s2*s1*s3) / (s1+s2+s3)**2) + (-1/60) * w1 * math.sin(f_angle) * s2 * ((2*s2**3 + 5*s2**2*s3 + 20*s1**2*s2 + 30*s1**2*s3 + 10*s2**2*s1 + 20*s1*s2*s3) / (s1+s2+s3)**2)
-                # print(mb) 
-                             
-        
-        # ray += (ma + mb) / self.length
-        # rby -= (ma + mb) / self.length
+                print(f"ma = {ma}\n\n\n\n") 
 
         rax, ray = transform_force(ray, rax)
         rbx, rby = transform_force(rby, rbx)
@@ -304,9 +300,11 @@ class Member:
         if len(self.uvl) > 0:
             for force in self.uvl:
                 force.draw(screen, GLOBAL_SCALE)
+        if len(self.moment) > 0:
+            for moment in self.moment:
+                moment.draw_arc(screen)
 
-       
-    
+   
 def s2g(screen_pos):
     # Convert screen coordinates to global coordinates
     x, y = screen_pos
@@ -339,6 +337,7 @@ def snap_to_existing_nodes_for_support(mouse_pos):
 
     # If no snapping occurred, return the original mouse position
     return mouse_pos, False
+
 
 def calculate_length_and_angle(start, end):
     dx = end[0] - start[0]
@@ -487,8 +486,13 @@ def edit_members(active, _members):
             force.loc = ratio * active_member.length
             force.screen = calculate_force_point(active_member.start_node.screen, active_member.angle, force.loc)
             adjusted = True
+        dist_loads = active_member.udl + active_member.uvl
+        for force in dist_loads:
+            force.a_distance = (force.a_distance / old_length) * active_member.length
+            force.b_distance = (force.b_distance / old_length) * active_member.length
+            adjusted = True
         if adjusted:
-            messagebox.showinfo("Info", "Point Forces me da zarry lenght-to-force location ratio pa hisab adjust krral.")
+            messagebox.showinfo("Info", "Forces me da zarry lenght-to-force location ratio pa hisab adjust krral.")
 
         if change_A.get():
             [member.update_A(area) for member in members]
@@ -613,10 +617,11 @@ def add_point_forces(active, _members):
             magnitude = round(float(_magnitude),3)
             angle = round(float(_angle),3)
             distFromA = round(float(_distFromA),3)
+            if distFromA > active_member.length:
+                distFromA = active_member.length
+                messagebox.showinfo("Error", "Ta che kam Location raku da aghy pa hisab sta da force da member na bahar rauzi, za ye darta pa gut ke lagom, bya ye pakhpala edit kawa. Merabani.")
+
             if active_force == None:
-                if distFromA > active_member.length:
-                    distFromA = active_member.length
-                    messagebox.showinfo("Error", "Ta che kam Location raku da aghy pa hisab sta da force da member na bahar rauzi, za ye darta pa gut ke lagom, bya ye pakhpala edit kawa. Merabani.")
                 no = len(active_member.point_forces)+1
                 point_Of_Force = calculate_force_point(active_member.start_node.screen, active_member.angle, distFromA)
                 active_member.point_forces.append(loads.Point_Force(no, active_member.start_node, angle, distFromA, magnitude, point_Of_Force))
@@ -624,9 +629,6 @@ def add_point_forces(active, _members):
             else:
                 active_force.mag = magnitude
                 active_force.angle = angle
-                if distFromA > active_member.length:
-                    distFromA = active_member.length
-                    messagebox.showinfo("Error", "Ta che kam Location raku da aghy pa hisab sta da force da member na bahar rauzi, za ye darta pa gut ke lagom, bya ye pakhpala edit kawa. Merabani.")
                 active_force.loc = distFromA
                 active_force.screen = calculate_force_point(active_member.start_node.screen, active_member.angle, distFromA)
 
@@ -688,7 +690,7 @@ def pre_def2():
     members[2].end_node.Fx = "Rx"
     members[2].end_node.Fy = "Ry"
     members[2].end_node.Mu = "Mu"
-    members[1].uvl.append(loads.Dist_Load(1, 'uvl', 5, 10, 290, 4, 10, members[1]))
+    members[1].uvl.append(loads.Dist_Load(1, 'uvl', 10, 5, 290, 4, 10, members[1]))
     return members
 
 def make_buttons(button_text, sub_button_texts):
@@ -999,4 +1001,96 @@ def add_moment(active, _members):
     global members, active_member, first_run, active_force
     
     active_member = active
-    return
+    active_force = None
+    members = _members
+    # Create a new tkinter window each time Enter is pressed
+    root = tk.Tk()
+    root.title(f"Add/Edit Moment to Member {active_member.id}")
+
+    options = ["Add New Moment"]
+    for force in active_member.moment:
+        options.append(f"Edit Moment no {force.no}")
+    
+    dropdown = tk.StringVar(root)
+    dropdown.set(options[0])  # Set the default option
+    dropdown_menu = tk.OptionMenu(root, dropdown, *options)
+    dropdown_menu.grid(row=0, column=1)
+    
+    #String Vars
+    mag_text_var = tk.StringVar(root)
+    loc_text_var = tk.StringVar(root)
+    
+    #Sample
+    # text_entry = tk.Entry(root, textvariable=text_var, state="normal", width=20)
+
+    entry1 = tk.Entry(root, textvariable=mag_text_var, state="normal", width=20)
+    entry2 = tk.Entry(root, textvariable=loc_text_var, state="normal", width=20)
+
+
+    label1 = tk.Label(root, text="Magnitude:")
+    label1.grid(row=1, column=0)
+    entry1.grid(row=1, column=1)
+    unit1 = tk.Label(root, text="N-ft")
+    unit1.grid(row=1, column=2)
+
+    
+    label2 = tk.Label(root, text="Distance from A:")
+    label2.grid(row=2, column=0)
+    entry2.grid(row=2, column=1)
+    unit2 = tk.Label(root, text="Degree")
+    unit2.grid(row=2, column=2)
+    
+    def update_text():
+        global first_run, active_force
+        selected_option = dropdown.get()
+        if selected_option == "Add new Moment":
+            active_force = None
+            mag_text_var.set(f"")
+            loc_text_var.set(f"")
+        else:
+            if first_run:
+                mag_text_var.set(f"")
+                loc_text_var.set(f"")
+            else:      
+                active_force = active_member.moment[int(selected_option.split(" ")[-1])-1]
+                mag_text_var.set(f"{active_force.magnitude}")
+                loc_text_var.set(f"{active_force.loc}")
+            first_run = False
+
+    # Initial text update
+    first_run = True
+    update_text()
+    
+    # Update text when dropdown changes
+    dropdown.trace('w', lambda *args: update_text())
+
+    def update_moment():
+        global active_member
+        _magnitude = entry1.get()
+        _distFromA = entry2.get()
+
+        try:
+            magnitude = round(float(_magnitude),3)
+            distFromA = round(float(_distFromA),3)
+            if distFromA > active_member.length:
+                distFromA = active_member.length
+                messagebox.showinfo("Error", "Ta che kam Location raku da aghy pa hisab sta da moment da member na bahar rauzi, za ye darta pa gut ke lagom, bya ye pakhpala edit kawa. Merabani.")
+
+            if active_force == None:
+                no = len(active_member.moment)+1
+                point_Of_Force = calculate_force_point(active_member.start_node.screen, active_member.angle, distFromA)
+                active_member.moment.append(loads.Moment(no, magnitude, distFromA, point_Of_Force))
+                active_member.calculate_FER()
+            else:
+                active_force.magnitude = magnitude
+                active_force.loc = distFromA
+                active_force.screen_cood = calculate_force_point(active_member.start_node.screen, active_member.angle, distFromA)
+
+        except ValueError:
+            pass
+        root.destroy()  # Close the tkinter window
+
+    button = Button(root, text="Add Moment", command=update_moment)
+    button.grid(row=3, column=1)
+
+    root.mainloop()  # Start the tkinter mainloop for this window

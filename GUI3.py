@@ -293,7 +293,7 @@ def update_info_screen():
             info_text = f""
             if len(active_member.moment) > 0:
                 for force in active_member.moment:
-                    info_text += f"{force.no}. {force.mag} N-ft at \n{force.loc} ft from A."
+                    info_text += f"{force.no}. {force.magnitude} N-ft at \n{force.loc} ft from A."
                 lines = info_text.split("\n")
             else:
                 info_text = f"No Moment Load Added to \nmember {active_member.id} yet."
@@ -508,6 +508,9 @@ while running:
                         for member in members:
                             if len(member.point_forces) > 0:
                                 [force.zoomIn_coods(event.pos, d_scale) for force in member.point_forces]
+                            if len(member.moment) > 0:
+                                [force.zoomIn_coods(event.pos, d_scale) for force in member.moment]
+                            
                         GLOBAL_CENTER = members[0].start_node.screen
                         aF.transfer_vars(GLOBAL_SCALE, GLOBAL_CENTER, HEIGHT)
                     else:
@@ -539,6 +542,8 @@ while running:
                         for member in members:
                             if len(member.point_forces) > 0:
                                 [force.zoomOut_coods(event.pos, d_scale) for force in member.point_forces]
+                            if len(member.moment) > 0:
+                                [force.zoomOut_coods(event.pos, d_scale) for force in member.moment]
                         GLOBAL_CENTER = members[0].start_node.screen
                         aF.transfer_vars(GLOBAL_SCALE, GLOBAL_CENTER, HEIGHT)
                     else:
@@ -573,6 +578,8 @@ while running:
                     for member in members:
                         if len(member.point_forces) > 0:
                             [force.pan(offset_x, offset_y) for force in member.point_forces]
+                        if len(member.moment) > 0:
+                            [force.pan(offset_x, offset_y) for force in member.moment]
                     GLOBAL_CENTER = members[0].start_node.screen
                     [member.calculate_mid() for member in members]
             else:
@@ -603,6 +610,8 @@ while running:
                     for member in members:
                         if len(member.point_forces) > 0:
                             [force.pan(offset_x, offset_y) for force in member.point_forces]
+                        if len(member.moment) > 0:
+                            [force.pan(offset_x, offset_y) for force in member.moment]
                     GLOBAL_CENTER = members[0].start_node.screen
                     [member.calculate_mid() for member in members]
 
@@ -703,6 +712,28 @@ while running:
             if scene != 999:
                 calcs_done = False
     
+    if active_member is not None:
+        # Create a font
+        _font = pygame.font.Font(None, 25)
+        # Render Node A
+        A_text_surface = _font.render("A", True, BLACK)
+        A_text_rect = A_text_surface.get_rect()
+        A_text_rect.center = active_member.start_node.screen
+        pygame.draw.circle(screen, YELLOW, active_member.start_node.screen, 10)
+        pygame.draw.circle(screen, RED, active_member.start_node.screen, 10, 1)
+        # Draw the text
+        screen.blit(A_text_surface, A_text_rect)
+        
+        # Render Node B
+        B_text_surface = _font.render("B", True, BLACK)
+        B_text_rect = B_text_surface.get_rect()
+        B_text_rect.center = active_member.end_node.screen
+        pygame.draw.circle(screen, YELLOW, active_member.end_node.screen, 10)
+        pygame.draw.circle(screen, RED, active_member.end_node.screen, 10, 1)
+        # Draw the text
+        screen.blit(B_text_surface, B_text_rect)
+        
+
     # Draw the current line (if still drawing)
     if start_point is not None and drawing:
         end_pos = pygame.mouse.get_pos()
