@@ -245,10 +245,10 @@ class Member:
             a = force.loc
             b = L - a
             
-            ray += (6 * a * b * M) / L**3
-            rby += (-6 * a * b * M) / L**3
-            ma += (M * b / L**2) * (2 * a - b)
-            mb += (M * a / L**2) * (2 * b - a)
+            ray += -1 * (6 * a * b * M) / L**3
+            rby += -1 * (-6 * a * b * M) / L**3
+            ma += -1 * (M * b / L**2) * (2 * a - b)
+            mb += -1 * (M * a / L**2) * (2 * b - a)
             print(f"ray = {ray} ma = {ma}")
             print(f"rby = {rby} mb = {mb}")
             print(f"")
