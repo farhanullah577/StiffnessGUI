@@ -228,48 +228,32 @@ class Member:
             s3 = c
             w1 = 0
             w2 = 0
-            case = 3
-            if force.start_mag < force.end_mag:
-                w1 = force.start_mag
-                w2 = force.end_mag
-                case = 1
-            elif force.start_mag > force.end_mag:
-                w2 = force.start_mag
-                w1 = force.end_mag
-                case = 2
-            else:
-                w1 = force.start_mag
-                w2 = force.end_mag
-                case = 3
+            
+            w1 = force.start_mag
+            w2 = force.end_mag
             f_angle = math.radians(get_angle(force.angle, self.angle))
-            if case == 1 or case == 3:
-                ray += (1/20) * w2 * math.sin(f_angle) * s2 * ((3*s2**3 + 5*s2**2*s1 + 10*s3**3 + 30*s3**2*s2 + 30*s3**2*s1 + 15*s2**2*s3 + 20*s3*s2*s1) / ((s1+s2+s3)**3)) + (1/20) * (w1 * math.sin(f_angle) *s2) * ((7*s2**3 + 15*s2**2*s1 + 10*s3**3 + 30*s3**2*s2 + 30*s3**2*s1 + 25*s2**2*s3+40*s3*s2*s1) / (s3+s2+s1)**3)
-                print(f"ray = {ray}")
-                rby += (1/20) * w1 * math.sin(f_angle) * s2 * ((3*s2**3 + 5*s2**2*s3 + 10*s1**3 + 30*s1**2*s2 + 30*s1**2*s3 + 15*s2**2*s1 + 20*s1*s2*s3) / ((s1+s2+s3)**3)) + (1/20) * (w2 * math.sin(f_angle) * s2) * ((7*s2**3 + 15*s2**2*s3 + 10*s1**3 + 30*s1**2*s2 + 30*s1**2*s3 + 25*s2**2*s1 + 40*s1*s2*s3) / (s3+s2+s1)**3)            
-                print(f"rby = {rby}")
-                rax += (1/20) * w2 * math.cos(f_angle) * s2 * ((3*s2**3 + 5*s2**2*s1 + 10*s3**3 + 30*s3**2*s2 + 30*s3**2*s1 + 15*s2**2*s3 + 20*s3*s2*s1) / ((s1+s2+s3)**3)) + (1/20) * (w1 * math.cos(f_angle) *s2) * ((7*s2**3 + 15*s2**2*s1 + 10*s3**3 + 30*s3**2*s2 + 30*s3**2*s1 + 25*s2**2*s3+40*s3*s2*s1) / (s3+s2+s1)**3)
-                print(f"rax = {rax}")
-                rbx += (1/20) * w1 * math.cos(f_angle) * s2 * ((3*s2**3 + 5*s2**2*s3 + 10*s1**3 + 30*s1**2*s2 + 30*s1**2*s3 + 15*s2**2*s1 + 20*s1*s2*s3) / ((s1+s2+s3)**3)) + (1/20) * (w2 * math.cos(f_angle) * s2) * ((7*s2**3 + 15*s2**2*s3 + 10*s1**3 + 30*s1**2*s2 + 30*s1**2*s3 + 25*s2**2*s1 + 40*s1*s2*s3) / (s3+s2+s1)**3)            
-                print(f"rbx = {rbx}")
-                ma += (1/60) * w1 * math.sin(f_angle) * s2 * ((3*s2**3 + 15*s2**2*s1 + 10*s3**2*s2 + 30*s3**2*s1 + 10*s2**2*s3 + 40*s3*s2*s1) / (s1+s2+s3)**2) + (1/60) * w2 * math.sin(f_angle) * s2 * ((2*s2**3 + 5*s2**2*s1 + 20*s3**2*s2 + 30*s3**2*s1 + 10*s2**2*s3 + 20*s2*s3*s1) / (s3+s2+s1)**2)
-                print(f"ma = {ma}")
-                mb += (-1/60) * w2 * math.sin(f_angle) * s2 * ((3*s2**3 + 15*s2**2*s3 + 10*s1**2*s2 +30*s1**2*s3 + 10*s2**2*s1 + 40*s2*s1*s3) / (s1+s2+s3)**2) + (-1/60) * w1 * math.sin(f_angle) * s2 * ((2*s2**3 + 5*s2**2*s3 + 20*s1**2*s2 + 30*s1**2*s3 + 10*s2**2*s1 + 20*s1*s2*s3) / (s1+s2+s3)**2)
-                print(f"mb = {mb}")  
+            ray += (1/20) * w2 * math.sin(f_angle) * s2 * ((3*s2**3 + 5*s2**2*s1 + 10*s3**3 + 30*s3**2*s2 + 30*s3**2*s1 + 15*s2**2*s3 + 20*s3*s2*s1) / ((s1+s2+s3)**3)) + (1/20) * (w1 * math.sin(f_angle) *s2) * ((7*s2**3 + 15*s2**2*s1 + 10*s3**3 + 30*s3**2*s2 + 30*s3**2*s1 + 25*s2**2*s3+40*s3*s2*s1) / (s3+s2+s1)**3)
+            rby += (1/20) * w1 * math.sin(f_angle) * s2 * ((3*s2**3 + 5*s2**2*s3 + 10*s1**3 + 30*s1**2*s2 + 30*s1**2*s3 + 15*s2**2*s1 + 20*s1*s2*s3) / ((s1+s2+s3)**3)) + (1/20) * (w2 * math.sin(f_angle) * s2) * ((7*s2**3 + 15*s2**2*s3 + 10*s1**3 + 30*s1**2*s2 + 30*s1**2*s3 + 25*s2**2*s1 + 40*s1*s2*s3) / (s3+s2+s1)**3)            
+            rax += (1/20) * w2 * math.cos(f_angle) * s2 * ((3*s2**3 + 5*s2**2*s1 + 10*s3**3 + 30*s3**2*s2 + 30*s3**2*s1 + 15*s2**2*s3 + 20*s3*s2*s1) / ((s1+s2+s3)**3)) + (1/20) * (w1 * math.cos(f_angle) *s2) * ((7*s2**3 + 15*s2**2*s1 + 10*s3**3 + 30*s3**2*s2 + 30*s3**2*s1 + 25*s2**2*s3+40*s3*s2*s1) / (s3+s2+s1)**3)
+            rbx += (1/20) * w1 * math.cos(f_angle) * s2 * ((3*s2**3 + 5*s2**2*s3 + 10*s1**3 + 30*s1**2*s2 + 30*s1**2*s3 + 15*s2**2*s1 + 20*s1*s2*s3) / ((s1+s2+s3)**3)) + (1/20) * (w2 * math.cos(f_angle) * s2) * ((7*s2**3 + 15*s2**2*s3 + 10*s1**3 + 30*s1**2*s2 + 30*s1**2*s3 + 25*s2**2*s1 + 40*s1*s2*s3) / (s3+s2+s1)**3)            
+            ma += (1/60) * w1 * math.sin(f_angle) * s2 * ((3*s2**3 + 15*s2**2*s1 + 10*s3**2*s2 + 30*s3**2*s1 + 10*s2**2*s3 + 40*s3*s2*s1) / (s1+s2+s3)**2) + (1/60) * w2 * math.sin(f_angle) * s2 * ((2*s2**3 + 5*s2**2*s1 + 20*s3**2*s2 + 30*s3**2*s1 + 10*s2**2*s3 + 20*s2*s3*s1) / (s3+s2+s1)**2)
+            mb += (-1/60) * w2 * math.sin(f_angle) * s2 * ((3*s2**3 + 15*s2**2*s3 + 10*s1**2*s2 +30*s1**2*s3 + 10*s2**2*s1 + 40*s2*s1*s3) / (s1+s2+s3)**2) + (-1/60) * w1 * math.sin(f_angle) * s2 * ((2*s2**3 + 5*s2**2*s3 + 20*s1**2*s2 + 30*s1**2*s3 + 10*s2**2*s1 + 20*s1*s2*s3) / (s1+s2+s3)**2)
+        
+        for force in self.moment:
+            M = force.magnitude
+            L = self.length
+            a = force.loc
+            b = L - a
+            
+            ray += (6 * a * b * M) / L**3
+            rby += (-6 * a * b * M) / L**3
+            ma += (M * b / L**2) * (2 * a - b)
+            mb += (M * a / L**2) * (2 * b - a)
+            print(f"ray = {ray} ma = {ma}")
+            print(f"rby = {rby} mb = {mb}")
+            print(f"")
+            print(f"")
                 
-            if case == 2:
-                rby += (1/20) * w2 * math.sin(f_angle) * s2 * ((3*s2**3 + 5*s2**2*s1 + 10*s3**3 + 30*s3**2*s2 + 30*s3**2*s1 + 15*s2**2*s3 + 20*s3*s2*s1) / ((s1+s2+s3)**3)) + (1/20) * (w1 * math.sin(f_angle) *s2) * ((7*s2**3 + 15*s2**2*s1 + 10*s3**3 + 30*s3**2*s2 + 30*s3**2*s1 + 25*s2**2*s3+40*s3*s2*s1) / (s3+s2+s1)**3)
-                print(f"rby = {rby}")
-                ray += (1/20) * w1 * math.sin(f_angle) * s2 * ((3*s2**3 + 5*s2**2*s3 + 10*s1**3 + 30*s1**2*s2 + 30*s1**2*s3 + 15*s2**2*s1 + 20*s1*s2*s3) / ((s1+s2+s3)**3)) + (1/20) * (w2 * math.sin(f_angle) * s2) * ((7*s2**3 + 15*s2**2*s3 + 10*s1**3 + 30*s1**2*s2 + 30*s1**2*s3 + 25*s2**2*s1 + 40*s1*s2*s3) / (s3+s2+s1)**3)            
-                print(f"ray = {ray}")
-                rbx += (1/20) * w2 * math.cos(f_angle) * s2 * ((3*s2**3 + 5*s2**2*s1 + 10*s3**3 + 30*s3**2*s2 + 30*s3**2*s1 + 15*s2**2*s3 + 20*s3*s2*s1) / ((s1+s2+s3)**3)) + (1/20) * (w1 * math.cos(f_angle) *s2) * ((7*s2**3 + 15*s2**2*s1 + 10*s3**3 + 30*s3**2*s2 + 30*s3**2*s1 + 25*s2**2*s3+40*s3*s2*s1) / (s3+s2+s1)**3)
-                print(f"rbx = {rbx}")
-                rax += (1/20) * w1 * math.cos(f_angle) * s2 * ((3*s2**3 + 5*s2**2*s3 + 10*s1**3 + 30*s1**2*s2 + 30*s1**2*s3 + 15*s2**2*s1 + 20*s1*s2*s3) / ((s1+s2+s3)**3)) + (1/20) * (w2 * math.cos(f_angle) * s2) * ((7*s2**3 + 15*s2**2*s3 + 10*s1**3 + 30*s1**2*s2 + 30*s1**2*s3 + 25*s2**2*s1 + 40*s1*s2*s3) / (s3+s2+s1)**3)            
-                print(f"rax = {rax}")
-                mb += (1/60) * w1 * math.sin(f_angle) * s2 * ((3*s2**3 + 15*s2**2*s1 + 10*s3**2*s2 + 30*s3**2*s1 + 10*s2**2*s3 + 40*s3*s2*s1) / (s1+s2+s3)**2) + (1/60) * w2 * math.sin(f_angle) * s2 * ((2*s2**3 + 5*s2**2*s1 + 20*s3**2*s2 + 30*s3**2*s1 + 10*s2**2*s3 + 20*s2*s3*s1) / (s3+s2+s1)**2)
-                print(f"mb = {mb}")
-                ma += (-1/60) * w2 * math.sin(f_angle) * s2 * ((3*s2**3 + 15*s2**2*s3 + 10*s1**2*s2 +30*s1**2*s3 + 10*s2**2*s1 + 40*s2*s1*s3) / (s1+s2+s3)**2) + (-1/60) * w1 * math.sin(f_angle) * s2 * ((2*s2**3 + 5*s2**2*s3 + 20*s1**2*s2 + 30*s1**2*s3 + 10*s2**2*s1 + 20*s1*s2*s3) / (s1+s2+s3)**2)
-                print(f"ma = {ma}\n\n\n\n") 
-
         rax, ray = transform_force(ray, rax)
         rbx, rby = transform_force(rby, rbx)
 
@@ -657,9 +641,9 @@ def pre_def():
     nodes = [Node(1, node1), Node(2, node2), Node(3, node3), Node(4, node4)]
     members = [Member(1, nodes[0], nodes[1], YELLOW), Member(2, nodes[1], nodes[2], YELLOW), Member(3, nodes[2], nodes[3], YELLOW)]
     for member in members:
-        member.update_I(3.255e-4)
-        member.update_E(449570.7)
-        member.update_A(0.0625)
+        member.update_I(0.0001)
+        member.update_E(2E11)
+        member.update_A(0.05)
     members[0].start_node.support = "Fix"
     members[0].start_node.Fx = "Rx"
     members[0].start_node.Fy = "Ry"
@@ -679,9 +663,9 @@ def pre_def2():
     nodes = [Node(1, node1), Node(2, node2), Node(3, node3), Node(4, node4)]
     members = [Member(1, nodes[0], nodes[1], YELLOW), Member(2, nodes[1], nodes[2], YELLOW), Member(3, nodes[2], nodes[3], YELLOW)]
     for member in members:
-        member.update_I(3.255e-4)
-        member.update_E(449570.7)
-        member.update_A(0.0625)
+        member.update_I(0.0001)
+        member.update_E(2E11)
+        member.update_A(0.05)
     members[0].start_node.support = "Fix"
     members[0].start_node.Fx = "Rx"
     members[0].start_node.Fy = "Ry"
@@ -690,7 +674,9 @@ def pre_def2():
     members[2].end_node.Fx = "Rx"
     members[2].end_node.Fy = "Ry"
     members[2].end_node.Mu = "Mu"
-    members[1].uvl.append(loads.Dist_Load(1, 'uvl', 10, 5, 290, 4, 10, members[1]))
+    # members[1].uvl.append(loads.Dist_Load(1, 'uvl', 10, 5, 290, 4, 10, members[1]))
+    screen_cood = calculate_force_point(members[1].start_node.screen, members[1].angle, 5)
+    members[1].moment.append(loads.Moment(1, 10, 5, screen_cood))
     return members
 
 def make_buttons(button_text, sub_button_texts):
@@ -1080,7 +1066,7 @@ def add_moment(active, _members):
                 no = len(active_member.moment)+1
                 point_Of_Force = calculate_force_point(active_member.start_node.screen, active_member.angle, distFromA)
                 active_member.moment.append(loads.Moment(no, magnitude, distFromA, point_Of_Force))
-                active_member.calculate_FER()
+                # active_member.calculate_FER()
             else:
                 active_force.magnitude = magnitude
                 active_force.loc = distFromA
