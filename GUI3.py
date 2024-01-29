@@ -4,7 +4,7 @@ from tkinter import messagebox
 import allFuncs as aF
 import calcs as cL
 import support as sup
-
+import numpy as np
 
 
 # Initialize Pygame
@@ -305,6 +305,10 @@ def update_info_screen():
             
             return active_member
         
+    elif scene == 999:
+        active_member = None
+        [mem.update_color(YELLOW) for mem in members]
+        
         
 
 def show_screen_name():
@@ -426,10 +430,13 @@ while running:
                                         aF.members = members
                                         if aF.check_definite([node.support for node in aF.nodes]):
                                             if not calcs_done:
-                                                # active_member = None
+                                                active_member = None
                                                 scene = 999
-                                                reactions = cL.calculations(aF.nodes, members)
+                                                aF.GLOBAL_SCALE = GLOBAL_SCALE
+                                                GLOBAL_CENTER = members[0].start_node.screen
+                                                reactions = cL.calculations(aF.nodes, members, GLOBAL_CENTER, GLOBAL_SCALE)
                                                 calcs_done = True
+                                                    
                                         else:
                                             messagebox.showinfo("Error", "The Structure in indeterminate. Please Recheck Support Conditions.")
                                             clicked = True
@@ -438,6 +445,24 @@ while running:
                                             clicked = True
                                             calcs_done = False
                                             scene = 1
+                                            reactions = []
+                                            for member in members:
+                                                member.sub_members = []
+                                            for node in aF.nodes:
+                                                node.dof = []
+                                                node.Fx = np.nan
+                                                node.Fy = np.nan
+                                                node.Mu = np.nan
+                                                if node.support == "Fix":
+                                                    node.Fx = "Rx"
+                                                    node.Fy = "Ry"
+                                                    node.Mu = "Mu"
+                                                elif node.support == "Pin":
+                                                    node.Fx = "Rx"
+                                                    node.Fy = "Ry"
+                                                elif node.support == "Roller":
+                                                    node.Fy = "Ry"
+                                                
                                 else:
                                     clicked = True
                     button.state = "close"
@@ -674,6 +699,7 @@ while running:
                 
             elif event.key == pygame.K_F2:
                 members = aF.pre_def2()
+                aF.GLOBAL_SCALE = GLOBAL_SCALE
                 reactions = cL.calculations(aF.nodes, members)
                 scene = 999
                 calcs_done = True
@@ -707,8 +733,7 @@ while running:
                 [reaction.draw(screen) for reaction in reactions]
             # if len(cL.sub_nodes) > 0:
             #     [node.draw(screen) for node in cL.sub_nodes]
-            if len(reactions) > 0:
-                [reaction.draw(screen) for reaction in reactions]
+
             if scene != 999:
                 calcs_done = False
     

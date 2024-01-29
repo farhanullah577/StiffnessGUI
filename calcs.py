@@ -6,7 +6,7 @@ import pygame
 import allFuncs as aF
 import random
 
-global sub_nodes, sub_members
+global sub_nodes, sub_members, GLOBAL_CENTER, GLOBAL_SCALE
 sub_nodes = []
 sub_members = []  
 
@@ -101,18 +101,34 @@ class Reaction:
 
 def find_sub_coods(member, node_arr):
     global sub_nodes, sub_members
-    scale = aF.GLOBAL_SCALE
-    no_of_divisions = 4
-    increment = member.length / no_of_divisions
+    
+    no_of_divisions = 2
+    screen_increment = (member.length / no_of_divisions) * GLOBAL_SCALE
+    global_increment = (member.length / no_of_divisions)
     member.sub_nodes.append(member.start_node)
     for i in range(1, no_of_divisions):
-        start_x, start_y = member.start_node.screen
-        x = start_x + (i * increment * math.cos(math.radians(member.angle))) * scale
-        y = start_y - (i * increment * math.sin(math.radians(member.angle))) * scale
-        member.sub_nodes.append(aF.Node(0, (x, y), "sub"))
+        s_start_x, s_start_y = member.start_node.screen
+        g_start_x, g_start_y = member.start_node.point
+        # print(f"global start = {member.start_node.point}")
+        # print(f"global end = {member.end_node.point}")
+        # print(f"screen start = {member.start_node.screen}")
+        # print(f"screen end = {member.end_node.screen}")
+        x_s = s_start_x + (i * screen_increment * math.cos(math.radians(member.angle)))
+        y_s = s_start_y - (i * screen_increment * math.sin(math.radians(member.angle)))
+        x_g = g_start_x + (i * global_increment * math.cos(math.radians(member.angle)))
+        y_g = g_start_y - (i * global_increment * math.sin(math.radians(member.angle)))
+        _sub_node = aF.Node(1, (x_s, y_s), "sub")
+        _sub_node.point = (x_g, y_g)
+        
+        member.sub_nodes.append(_sub_node)
     member.sub_nodes.append(member.end_node)
 
-        
+# def g2s(screen_pos):
+#     # Convert screen coordinates to global coordinates
+#     x, y = screen_pos
+#     global_x = (x - GLOBAL_CENTER[0]) * GLOBAL_SCALE
+#     global_y = ((y - GLOBAL_CENTER[1]) * GLOBAL_SCALE) * -1
+#     return global_x, global_y       
 
 def develop_sub_nodes(node_arr, member_arr):
     global sub_nodes, sub_members 
@@ -124,15 +140,77 @@ def develop_sub_nodes(node_arr, member_arr):
     for i in range(len(sub_nodes)):
         sub_nodes[i].sub_id = i+1
         
+def sub_moments(member):
+    for force in member.moment:
+        sub_length = member.sub_members[0].length
+        sub_mem_num_4_force = int(force.loc / len(member.sub_members))
+        loc = force.loc - (sub_mem_num_4_force * sub_length)
+        # point_Of_Force = aF.calculate_force_point(member.sub_members[sub_mem_num_4_force].start_node.screen, member.sub_members[sub_mem_num_4_force].angle, loc)
+        member.sub_members[sub_mem_num_4_force].moment.append(loads.Moment(force.no, force.magnitude, loc, force.screen_cood))
+
 def sub_point_forces(member):
     for force in member.point_forces:
         sub_length = member.sub_members[0].length
         sub_mem_num_4_force = int(force.loc / len(member.sub_members))
         loc = force.loc - (sub_mem_num_4_force * sub_length)
         # point_Of_Force = aF.calculate_force_point(member.sub_members[sub_mem_num_4_force].start_node.screen, member.sub_members[sub_mem_num_4_force].angle, loc)
-        member.sub_members[sub_mem_num_4_force].point_forces.append(loads.Point_Force(force.no, member.sub_members[sub_mem_num_4_force].start_node, force.angle, loc, force.mag, force.screen, member.sub_members[sub_mem_num_4_force].color))
-        
-        
+        member.sub_members[sub_mem_num_4_force].point_forces.append(loads.Point_Force(force.no, member.sub_members[sub_mem_num_4_force].start_node, force.angle, loc, force.mag, force.screen, member.sub_members[sub_mem_num_4_force].color))        
+
+
+def sub_dist_loads(member):
+    dls = member.udl + member.uvl
+    for force in dls:
+        sM = force.start_mag
+        eM = force.end_mag
+        angle = force.angle
+        a = force.a_distance
+        b = force.b_distance
+        c = a + b
+        d = (eM - sM) / b #Delta force per lenght 
+        start = 0
+        for sub_member in member.sub_members:
+            sL = sub_member.length
+            _c = start + sL
+            #if starts in sub
+            if start <= a <= _c:
+                _a = a - start
+                #if starts in the sub and end after sub
+                if c > _c:
+                    _b = sL - _a
+                    _eM = sM + d * _b
+                    if force.type == "udl":
+                        sub_member.udl.append(loads.Dist_Load(len(sub_member.udl)+1, "udl", sM, _eM, angle, _a, _b, sub_member))
+                    else:
+                        sub_member.uvl.append(loads.Dist_Load(len(sub_member.udl)+1, "uvl", sM, _eM, angle, _a, _b, sub_member))
+                #if starts in the sub and end in the sub
+                if c <= _c:
+                    if force.type == "udl":
+                        sub_member.udl.append(loads.Dist_Load(len(sub_member.udl)+1, "udl", sM, eM, angle, _a, b, sub_member))
+                    else:
+                        sub_member.uvl.append(loads.Dist_Load(len(sub_member.udl)+1, "uvl", sM, eM, angle, _a, b, sub_member))
+            
+            #if starts before sub
+            if a < start:
+                _a = 0
+                _sM = sM + d * (start - a)
+                #if starts before sub and ends after sub
+                if c > _c:
+                    _eM = sM + d * (_c - a)
+                    _b = sL
+                    if force.type == "udl":
+                        sub_member.udl.append(loads.Dist_Load(len(sub_member.udl)+1, "udl", _sM, _eM, angle, _a, _b, sub_member))
+                    else:
+                        sub_member.uvl.append(loads.Dist_Load(len(sub_member.udl)+1, "uvl", _sM, _eM, angle, _a, _b, sub_member))
+                #if starts before sub and ends in sub
+                if c < _c:
+                    _b = c - start
+                    if force.type == "udl":
+                        sub_member.udl.append(loads.Dist_Load(len(sub_member.udl)+1, "udl", _sM, eM, angle, _a, _b, sub_member))
+                    else:
+                        sub_member.uvl.append(loads.Dist_Load(len(sub_member.udl)+1, "uvl", _sM, eM, angle, _a, _b, sub_member))
+                    
+            start += sL
+              
         
 def develop_sub_members(members):
     global sub_members
@@ -144,6 +222,8 @@ def develop_sub_members(members):
             sub_mem_id += 1
             sub_members.append(sub_member)
         sub_point_forces(member)
+        sub_moments(member)
+        sub_dist_loads(member)
 
 def reset(members):
     global sub_nodes, sub_members
@@ -152,19 +232,22 @@ def reset(members):
     for member in members:
         member.sub_members = []
 
-def calculations(nodes, members):
-    global sub_nodes, sub_members
+def calculations(nodes, members, _GLOBAL_CENTER, _GLOBAL_SCALE):
+    global sub_nodes, sub_members, GLOBAL_CENTER, GLOBAL_SCALE
+    
+    GLOBAL_CENTER = _GLOBAL_CENTER
+    GLOBAL_SCALE = _GLOBAL_SCALE
     
     reset(members)
     
-    # develop_sub_nodes(nodes, members)
-    # develop_sub_members(members)`
+    develop_sub_nodes(nodes, members)
+    develop_sub_members(members)
     
     # [print(f"sub member {member.id} \nstart node {member.start_node.sub_id} \nend node {member.end_node.sub_id} \nlength {member.length} \nAngle {member.angle}") for member in sub_members]
-    # [member.finalize_calcs() for member in sub_members]
+    [member.finalize_calcs() for member in sub_members]
     [member.finalize_calcs() for member in members]
-    # nodes = sub_nodes
-    # members = sub_members
+    nodes = sub_nodes
+    members = sub_members
     dof = 1
     allDel = []
     for node in nodes:

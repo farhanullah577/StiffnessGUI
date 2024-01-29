@@ -634,12 +634,14 @@ def calculate_force_point(start, angle, dist):
 
 def pre_def():
     global nodes
-    node1 = (500, 400)
-    node2 = (500, 200)
-    node3 = (700, 200)
-    node4 = (700, 400)
-    nodes = [Node(1, node1), Node(2, node2), Node(3, node3), Node(4, node4)]
-    members = [Member(1, nodes[0], nodes[1], YELLOW), Member(2, nodes[1], nodes[2], YELLOW), Member(3, nodes[2], nodes[3], YELLOW)]
+    node1 = (300, 400)
+    # node2 = (500, 200)
+    # node3 = (700, 200)
+    node2 = (500, 400)
+    # nodes = [Node(1, node1), Node(2, node2), Node(3, node3), Node(4, node4)]
+    nodes = [Node(1, node1), Node(2, node2)]
+    # members = [Member(1, nodes[0], nodes[1], YELLOW), Member(2, nodes[1], nodes[2], YELLOW), Member(3, nodes[2], nodes[3], YELLOW)]
+    members = [Member(1, nodes[0], nodes[1], YELLOW)]
     for member in members:
         member.update_I(0.0001)
         member.update_E(2E11)
@@ -648,10 +650,11 @@ def pre_def():
     members[0].start_node.Fx = "Rx"
     members[0].start_node.Fy = "Ry"
     members[0].start_node.Mu = "Mu"
-    members[2].end_node.support = "Fix"
-    members[2].end_node.Fx = "Rx"
-    members[2].end_node.Fy = "Ry"
-    members[2].end_node.Mu = "Mu"
+    members[0].end_node.support = "Fix"
+    members[0].end_node.Fx = "Rx"
+    members[0].end_node.Fy = "Ry"
+    members[0].end_node.Mu = "Mu"
+    members[0].uvl.append(loads.Dist_Load(1, 'udl', 10, 10, 290, 4, 10, members[0]))
     return members
 
 def pre_def2():
@@ -676,7 +679,7 @@ def pre_def2():
     members[2].end_node.Mu = "Mu"
     # members[1].uvl.append(loads.Dist_Load(1, 'uvl', 10, 5, 290, 4, 10, members[1]))
     screen_cood = calculate_force_point(members[1].start_node.screen, members[1].angle, 5)
-    members[1].moment.append(loads.Moment(1, 10, 5, screen_cood))
+    # members[1].moment.append(loads.Moment(10, 10, 5, screen_cood))
     return members
 
 def make_buttons(button_text, sub_button_texts):
