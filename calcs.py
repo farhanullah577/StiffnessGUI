@@ -21,10 +21,9 @@ class Reaction:
         # self.shape = self.def_shape()
 
     def draw_arc(self, screen):
-        green = (0, 255, 0)
         x = self.node.screen[0] - 25
         y = self.node.screen[1] - 25
-        pygame.draw.arc(screen, green, (*(x, y), 50, 50), math.radians(90), 0, width=1)
+        pygame.draw.arc(screen, self.color, (*(x, y), 50, 50), math.radians(90), 0, width=1)
         # pygame.draw.circle(screen, black, coordinate, 5)
         if self.magnitude >= 0:
             arr = [(x+48, y+20), (x+53, y+30), (x+43, y+30)]
@@ -32,13 +31,13 @@ class Reaction:
         else:
             arr = [(x+35, y), (x+25, y+5), (x+25, y-5)]
             text_loc = (self.node.screen[0]+70, self.node.screen[1]-25)
-        pygame.draw.polygon(screen, green, arr)
+        pygame.draw.polygon(screen, self.color, arr)
 
         # Create a font
         font = pygame.font.Font(None, 25)
 
         # Render the text
-        text_surface = font.render(f"{self.magnitude}", True, green)
+        text_surface = font.render(f"{self.magnitude}", True, self.color)
         text_rect = text_surface.get_rect()
         text_rect.midright = text_loc
 
@@ -132,7 +131,9 @@ def develop_sub_nodes(node_arr, member_arr):
 def sub_moments(member):
     for force in member.moment:
         sub_length = member.sub_members[0].length
-        sub_mem_num_4_force = int(force.loc / len(member.sub_members))
+        sub_mem_num_4_force = int(force.loc / sub_length)
+        if sub_mem_num_4_force >= len(member.sub_members):
+            sub_mem_num_4_force -= 1
         loc = force.loc - (sub_mem_num_4_force * sub_length)
         # point_Of_Force = aF.calculate_force_point(member.sub_members[sub_mem_num_4_force].start_node.screen, member.sub_members[sub_mem_num_4_force].angle, loc)
         member.sub_members[sub_mem_num_4_force].moment.append(loads.Moment(force.no, force.magnitude, loc, force.screen_cood))
@@ -140,7 +141,9 @@ def sub_moments(member):
 def sub_point_forces(member):
     for force in member.point_forces:
         sub_length = member.sub_members[0].length
-        sub_mem_num_4_force = int(force.loc / len(member.sub_members))
+        sub_mem_num_4_force = int(force.loc / sub_length)
+        if sub_mem_num_4_force >= len(member.sub_members):
+            sub_mem_num_4_force -= 1
         loc = force.loc - (sub_mem_num_4_force * sub_length)
         # point_Of_Force = aF.calculate_force_point(member.sub_members[sub_mem_num_4_force].start_node.screen, member.sub_members[sub_mem_num_4_force].angle, loc)
         member.sub_members[sub_mem_num_4_force].point_forces.append(loads.Point_Force(force.no, member.sub_members[sub_mem_num_4_force].start_node, force.angle, loc, force.mag, force.screen, member.sub_members[sub_mem_num_4_force].color))        

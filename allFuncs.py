@@ -23,7 +23,7 @@ YELLOW = (255, 255, 0)
 BLUE = (0, 0, 255)
 
 SNAP_RADIUS = 20  # The radius for snapping in pixels
-ANGLE_INCREMENT = 45  # The angle increment for drawing lines
+ANGLE_INCREMENT = 1  # The angle increment for drawing lines
 
 
 def transfer_vars(scale, center, HEIGHT_):

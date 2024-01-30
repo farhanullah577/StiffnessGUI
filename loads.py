@@ -67,7 +67,7 @@ class Point_Force:
         screen.blit(text_surface, text_rect)
         
 class Dist_Load:
-    def __init__(self, no, _type, start_mag, end_mag, angle, a_distance, b_distance, parent):
+    def __init__(self, no, _type, start_mag, end_mag, angle, a_distance, b_distance, parent, color = (255, 0, 0)):
         self.no = no
         self.type = _type
         self.start_mag = start_mag
@@ -76,7 +76,7 @@ class Dist_Load:
         self.a_distance = a_distance
         self.b_distance = b_distance
         self.parent = parent
-        self.color = RED
+        self.color = color
 
     
     
@@ -136,7 +136,7 @@ class Dist_Load:
                     # Create a font
                     font = pygame.font.Font(None, 36)
                     # Render the text
-                    text_surface = font.render(f"{self.start_mag} N/ft", True, (255, 255, 255))
+                    text_surface = font.render(f"{self.start_mag} N/ft", True, self.color)
                     text_rect = text_surface.get_rect()
                     text_rect.center = (end_x + (arrow_length+5) * math.cos(math.radians(self.angle)), end_y - (arrow_length+5) * math.sin(math.radians(self.angle)))
                     # Draw the text
@@ -145,18 +145,19 @@ class Dist_Load:
                     # Create a font
                     font = pygame.font.Font(None, 36)
                     # Render the text
-                    text_surface = font.render(f"{self.end_mag} N/ft", True, (255, 255, 255))
+                    text_surface = font.render(f"{self.end_mag} N/ft", True, self.color)
                     text_rect = text_surface.get_rect()
                     text_rect.center = (end_x + (arrow_length+5) * math.cos(math.radians(self.angle)), end_y - (arrow_length+5) * math.sin(math.radians(self.angle)))
                     # Draw the text
                     screen.blit(text_surface, text_rect)
                        
 class Moment:
-    def __init__(self, no, mag, dist_from_A, cood):
+    def __init__(self, no, mag, dist_from_A, cood, color = (255, 0, 0)):
         self.no = no
         self.magnitude = mag
         self.loc = dist_from_A
         self.screen_cood = cood
+        self.color = color
     
     def pan(self, offset_x, offset_y):
         self.screen_cood = (self.screen_cood[0] + offset_x, self.screen_cood[1] + offset_y)
@@ -180,10 +181,10 @@ class Moment:
         self.screen_cood = (new_x, new_y)
     
     def draw_arc(self, screen):
-        green = (0, 255, 0)
+        
         x = self.screen_cood[0] - 25
         y = self.screen_cood[1] - 25
-        pygame.draw.arc(screen, green, (*(x, y), 50, 50), math.radians(90), 0, width=1)
+        pygame.draw.arc(screen, self.color, (*(x, y), 50, 50), math.radians(90), 0, width=1)
         # pygame.draw.circle(screen, black, coordinate, 5)
         if self.magnitude >= 0:
             arr = [(x+48, y+20), (x+53, y+30), (x+43, y+30)]
@@ -191,16 +192,18 @@ class Moment:
         else:
             arr = [(x+35, y), (x+25, y+5), (x+25, y-5)]
             text_loc = (self.screen_cood[0]+70, self.screen_cood[1]-25)
-        pygame.draw.polygon(screen, green, arr)
+        pygame.draw.polygon(screen, self.color, arr)
 
         # Create a font
         font = pygame.font.Font(None, 25)
 
         # Render the text
-        text_surface = font.render(f"{self.magnitude}", True, green)
+        text_surface = font.render(f"{self.magnitude}", True, self.color)
         text_rect = text_surface.get_rect()
         text_rect.midright = text_loc
 
 
         # Draw the text
         screen.blit(text_surface, text_rect)
+        
+        
