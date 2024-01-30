@@ -448,6 +448,8 @@ while running:
                                             reactions = []
                                             for member in members:
                                                 member.sub_members = []
+                                                member.sub_nodes = []
+                                                member.FER = np.array([0, 0, 0, 0, 0, 0], dtype=float)
                                             for node in aF.nodes:
                                                 node.dof = []
                                                 node.Fx = np.nan

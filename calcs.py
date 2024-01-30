@@ -109,10 +109,6 @@ def find_sub_coods(member, node_arr):
     for i in range(1, no_of_divisions):
         s_start_x, s_start_y = member.start_node.screen
         g_start_x, g_start_y = member.start_node.point
-        # print(f"global start = {member.start_node.point}")
-        # print(f"global end = {member.end_node.point}")
-        # print(f"screen start = {member.start_node.screen}")
-        # print(f"screen end = {member.end_node.screen}")
         x_s = s_start_x + (i * screen_increment * math.cos(math.radians(member.angle)))
         y_s = s_start_y - (i * screen_increment * math.sin(math.radians(member.angle)))
         x_g = g_start_x + (i * global_increment * math.cos(math.radians(member.angle)))
@@ -122,13 +118,6 @@ def find_sub_coods(member, node_arr):
         
         member.sub_nodes.append(_sub_node)
     member.sub_nodes.append(member.end_node)
-
-# def g2s(screen_pos):
-#     # Convert screen coordinates to global coordinates
-#     x, y = screen_pos
-#     global_x = (x - GLOBAL_CENTER[0]) * GLOBAL_SCALE
-#     global_y = ((y - GLOBAL_CENTER[1]) * GLOBAL_SCALE) * -1
-#     return global_x, global_y       
 
 def develop_sub_nodes(node_arr, member_arr):
     global sub_nodes, sub_members 
