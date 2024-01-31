@@ -46,6 +46,7 @@ class Reaction:
         screen.blit(text_surface, text_rect)
 
     def get_angle(self):
+        angle = 0
         if self.type == "Rx": 
             if self.magnitude >= 0:
                 angle = 0

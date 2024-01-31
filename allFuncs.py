@@ -632,6 +632,9 @@ def calculate_force_point(start, angle, dist):
 
 def pre_def():
     global nodes
+    """
+    #Old Pre def
+    
     node1 = (300, 400)
     # node2 = (500, 200)
     # node3 = (700, 200)
@@ -653,6 +656,32 @@ def pre_def():
     members[0].end_node.Fy = "Ry"
     members[0].end_node.Mu = "Mu"
     members[0].uvl.append(loads.Dist_Load(1, 'udl', 10, 10, 290, 4, 10, members[0]))
+    
+    """
+    start_x = 400
+    start_y = 400
+    node1 = (start_x, start_y)
+    node2 = (start_x, start_y-100)
+    node3 = (start_x, start_y-200)
+    node4 = (start_x+200, start_y-200)
+    node5 = (start_x+200, start_y-100)
+    node6 = (start_x+200, start_y)
+    nodes = [Node(1, node1), Node(2, node2), Node(3, node3), Node(4, node4), Node(5, node5), Node(6, node6)]
+    members = [Member(1, nodes[0], nodes[1], YELLOW), Member(2, nodes[1], nodes[2], YELLOW), Member(3, nodes[2], nodes[3], YELLOW), Member(4, nodes[3], nodes[4], YELLOW), Member(5, nodes[4], nodes[5], YELLOW), Member(6, nodes[1], nodes[4], YELLOW)]
+    for member in members:
+        member.update_I(0.0001)
+        member.update_E(2E11)
+        member.update_A(0.05)
+    members[0].start_node.support = "Fix"
+    members[0].start_node.Fx = "Rx"
+    members[0].start_node.Fy = "Ry"
+    members[0].start_node.Mu = "Mu"
+    members[4].end_node.support = "Fix"
+    members[4].end_node.Fx = "Rx"
+    members[4].end_node.Fy = "Ry"
+    members[4].end_node.Mu = "Mu"
+    members[2].uvl.append(loads.Dist_Load(1, 'udl', 10, 10, 290, 2, 15, members[2]))
+    
     return members
 
 def pre_def2():
