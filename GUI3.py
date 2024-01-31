@@ -142,6 +142,17 @@ def update_selected_button(text):
                 sub_button.selected = False
 
 
+def update_del_button():
+    global members, active_member
+    
+    if scene == 2 and active_member is not None:
+        del_rect = pygame.Rect(WIDTH - 50, 30, 30, 30)
+        pygame.draw.rect(screen, RED, del_rect)
+        pygame.draw.rect(screen, YELLOW, del_rect, 2)
+        pygame.draw.line(screen, BLACK, (WIDTH - 45, 35), (WIDTH - 25, 55), 3)
+        pygame.draw.line(screen, BLACK, (WIDTH - 45, 55), (WIDTH - 25, 35), 3)
+             
+        
 def update_info_screen():
     global active_member
     info_screen.fill(GREY)
@@ -334,7 +345,7 @@ def show_screen_name():
         
     text_surface = font.render(line, True, RED)
     text_rect = text_surface.get_rect()
-    text_rect.midright = (WIDTH, 60)
+    text_rect.midright = (WIDTH, HEIGHT-5)
     screen.blit(text_surface, text_rect)
 
 
@@ -395,6 +406,7 @@ while running:
                                     update_selected_button(sub_button.text)
                                     if sub_button.text in ["Draw"]:
                                         if sub_button.status:
+                                            active_member = None
                                             scene = sub_button.click()
                                             clicked = True
                                     if sub_button.text in ["Edit"]:
@@ -470,6 +482,12 @@ while running:
                     button.state = "close"
                     if button.x <= event.pos[0] <= button.x + button.width and button.y <= event.pos[1] <= button.y + button.height:
                         button.state = "open"
+                
+                if scene == 2 and active_member is not None:
+                    if WIDTH-50 <= pygame.mouse.get_pos()[0] <= WIDTH - 50 + 30 and 30 <= pygame.mouse.get_pos()[1] <= 30 + 30:
+                        members.remove(active_member)
+                        active_member = None
+                        clicked = True
                 
                 if scene == 100:
                     node, snapped_node = aF.snap_to_existing_nodes_for_support(event.pos)
@@ -648,6 +666,11 @@ while running:
                 panning = False
 
         elif event.type == pygame.KEYDOWN:
+            
+            if event.key == pygame.K_DELETE:
+                if active_member is not None and scene == 2:
+                    members.remove(active_member)
+                    active_member = None
 
             if event.key == pygame.K_RETURN:
                 if scene == 1:
@@ -772,6 +795,8 @@ while running:
     screen.blit(info_screen, (0, 0))
     update_info_screen()
     show_screen_name()
+    update_del_button()
+    
     for button in main_buttons:
         for sub_button in button.sub_buttons:
             check_status(sub_button)
