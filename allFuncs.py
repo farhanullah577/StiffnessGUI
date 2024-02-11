@@ -1,12 +1,12 @@
 import math
 import tkinter as tk
-from tkinter import Entry, Button, Checkbutton, BooleanVar, messagebox
+from tkinter import Entry, Button, Checkbutton, BooleanVar, messagebox, ttk
 import pygame
 import numpy as np
 import loads
 import buttons
 
-global members, active_member, GLOBAL_SCALE, set_initial_scale, GLOBAL_CENTER, HEIGHT, node_no, nodes, first_run, active_force
+global members, active_member, GLOBAL_SCALE, set_initial_scale, GLOBAL_CENTER, HEIGHT, node_no, nodes, first_run, active_force, screen
 
 active_member = None
 active_force = None
@@ -21,6 +21,7 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
 BLUE = (0, 0, 255)
+screen = None
 
 SNAP_RADIUS = 20  # The radius for snapping in pixels
 ANGLE_INCREMENT = 1  # The angle increment for drawing lines
@@ -507,87 +508,103 @@ def add_point_forces(active, _members):
     active_member = active
     active_force = None
     members = _members
-    # Create a new tkinter window each time Enter is pressed
+    
+    def on_dropdown_change(event):
+        update_text()
+        update_blur()
+    
+    def on_entry_change(event):
+        try:
+            float(mag_text_var.get())
+            float(angle_text_var.get())
+            float(loc_text_var.get())
+            button.config(state="normal")
+        except ValueError:
+            button.config(state="disabled")
+
+    def update_blur():
+        selected_option = dropdown_var.get()
+        if selected_option == "Add New Force":
+            delete_button.config(state="disabled")
+        else:
+            delete_button.config(state="normal")
+
+    # Create the main window
     root = tk.Tk()
-    root.title(f"Add/Edit Point Force to Member {active_member.id}")
+    root.title("Force Selector")
 
     options = ["Add New Force"]
     for force in active_member.point_forces:
         options.append(f"Edit Force no {force.no}")
     
-    dropdown = tk.StringVar(root)
-    dropdown.set(options[0])  # Set the default option
-    dropdown_menu = tk.OptionMenu(root, dropdown, *options)
-    dropdown_menu.grid(row=0, column=1)
+    # Create a StringVar to store the selected option
+    dropdown_var = tk.StringVar()
+    
+    # Create the dropdown menu with more options
+    dropdown = ttk.Combobox(root, textvariable=dropdown_var, values=options, state="readonly")
+    dropdown.grid(row=0, column=1)
+    dropdown.set("Add New Force")  # Set the default selected value
+    
+    # Bind the dropdown to a function that gets called when the selection changes
+    dropdown.bind("<<ComboboxSelected>>", on_dropdown_change)
     
     #String Vars
     mag_text_var = tk.StringVar(root)
     angle_text_var = tk.StringVar(root)
     loc_text_var = tk.StringVar(root)
-    #Sample
-    # text_entry = tk.Entry(root, textvariable=text_var, state="normal", width=20)
 
     entry1 = tk.Entry(root, textvariable=mag_text_var, state="normal", width=20)
     entry2 = tk.Entry(root, textvariable=angle_text_var, state="normal", width=20)
     entry3 = tk.Entry(root, textvariable=loc_text_var, state="normal", width=20)
 
+    # Bind the entry to a function that gets called when its content changes
+    entry1.bind("<KeyRelease>", on_entry_change)
+    entry2.bind("<KeyRelease>", on_entry_change)
+    entry3.bind("<KeyRelease>", on_entry_change)
 
     label1 = tk.Label(root, text="Magnitude:")
     label1.grid(row=1, column=0)
-    # entry1 = Entry(root)
-    # entry1.insert(0, f"{active_member.length}")
-    # entry1.insert(0, f"")
     entry1.grid(row=1, column=1)
     unit1 = tk.Label(root, text="N")
     unit1.grid(row=1, column=2)
-
     
     label2 = tk.Label(root, text="Angle:")
     label2.grid(row=2, column=0)
-    # entry2 = Entry(root)
-    # entry2.insert(0, f"{active_member.angle}")
-    # entry2.insert(0, f"")
     entry2.grid(row=2, column=1)
     unit2 = tk.Label(root, text="Degree")
     unit2.grid(row=2, column=2)
 
     label3 = tk.Label(root, text="Distance from Point A:")
     label3.grid(row=3, column=0)
-    # entry3 = Entry(root)
-    # entry3.insert(0, f"{active_member.A}")
-    # entry3.insert(0, f"")
     entry3.grid(row=3, column=1)
     unit3 = tk.Label(root, text="Feet")
     unit3.grid(row=3, column=2)
     
     def update_text():
         global first_run, active_force
-        selected_option = dropdown.get()
-        if selected_option == "Add new force":
+        selected_option = dropdown_var.get()
+        if selected_option == "Add New Force":
             active_force = None
             mag_text_var.set(f"")
             angle_text_var.set(f"")
             loc_text_var.set(f"")
-        else:
-            if first_run:
-                mag_text_var.set(f"")
-                angle_text_var.set(f"")
-                loc_text_var.set(f"")
-            else:      
-                active_force = active_member.point_forces[int(selected_option.split(" ")[-1])-1]
-                mag_text_var.set(f"{active_force.mag}")
-                angle_text_var.set(f"{active_force.angle}")
-                loc_text_var.set(f"{active_force.loc}")
-            first_run = False
-
+        else:     
+            active_force = active_member.point_forces[int(selected_option.split(" ")[-1])-1]
+            mag_text_var.set(f"{active_force.mag}")
+            angle_text_var.set(f"{active_force.angle}")
+            loc_text_var.set(f"{active_force.loc}")
     
     # Initial text update
-    first_run = True
     update_text()
     
-    # Update text when dropdown changes
-    dropdown.trace('w', lambda *args: update_text())
-
+    def delete_force():
+        global active_member
+        selected_option = dropdown.get()
+        if selected_option != "Add New Force":    
+            active_force = active_member.point_forces[int(selected_option.split(" ")[-1])-1]
+            active_member.point_forces.remove(active_force)
+            active_member.draw(screen)
+            root.destroy()
 
     def update_force():
         global active_member
@@ -618,9 +635,17 @@ def add_point_forces(active, _members):
             pass
         root.destroy()  # Close the tkinter window
 
-    button = Button(root, text="Add Force", command=update_force)
-    button.grid(row=6, column=1)
-
+    #Add Force Button
+    button = Button(root, text="Add Force", command=update_force, state="disabled")
+    button.grid(row=6, column=0)
+    
+    # Create a delete_button
+    delete_button = tk.Button(root, text="Delete Force", command=delete_force)
+    delete_button.grid(row=6, column=1)
+    
+    # Update the delete_button state initially
+    update_blur()
+    
     root.mainloop()  # Start the tkinter mainloop for this window
 
 def calculate_force_point(start, angle, dist):
@@ -632,46 +657,20 @@ def calculate_force_point(start, angle, dist):
 
 def pre_def():
     global nodes
-    """
-    #Old Pre def
-    
-    node1 = (300, 400)
-    # node2 = (500, 200)
-    # node3 = (700, 200)
-    node2 = (500, 400)
-    # nodes = [Node(1, node1), Node(2, node2), Node(3, node3), Node(4, node4)]
-    nodes = [Node(1, node1), Node(2, node2)]
-    # members = [Member(1, nodes[0], nodes[1], YELLOW), Member(2, nodes[1], nodes[2], YELLOW), Member(3, nodes[2], nodes[3], YELLOW)]
-    members = [Member(1, nodes[0], nodes[1], YELLOW)]
-    for member in members:
-        member.update_I(0.0001)
-        member.update_E(2E11)
-        member.update_A(0.05)
-    members[0].start_node.support = "Fix"
-    members[0].start_node.Fx = "Rx"
-    members[0].start_node.Fy = "Ry"
-    members[0].start_node.Mu = "Mu"
-    members[0].end_node.support = "Fix"
-    members[0].end_node.Fx = "Rx"
-    members[0].end_node.Fy = "Ry"
-    members[0].end_node.Mu = "Mu"
-    members[0].uvl.append(loads.Dist_Load(1, 'udl', 10, 10, 290, 4, 10, members[0]))
-    
-    """
     start_x = 400
-    start_y = 400
+    start_y = 450
     node1 = (start_x, start_y)
-    node2 = (start_x, start_y-100)
-    node3 = (start_x, start_y-200)
-    node4 = (start_x+200, start_y-200)
-    node5 = (start_x+200, start_y-100)
+    node2 = (start_x-50, start_y-200)
+    node3 = (start_x, start_y-400)
+    node4 = (start_x+200, start_y-400)
+    node5 = (start_x+250, start_y-200)
     node6 = (start_x+200, start_y)
     nodes = [Node(1, node1), Node(2, node2), Node(3, node3), Node(4, node4), Node(5, node5), Node(6, node6)]
     members = [Member(1, nodes[0], nodes[1], YELLOW), Member(2, nodes[1], nodes[2], YELLOW), Member(3, nodes[2], nodes[3], YELLOW), Member(4, nodes[3], nodes[4], YELLOW), Member(5, nodes[4], nodes[5], YELLOW), Member(6, nodes[1], nodes[4], YELLOW)]
     for member in members:
-        member.update_I(0.0001)
-        member.update_E(2E11)
-        member.update_A(0.05)
+        member.update_I(3.255e-4)
+        member.update_E(4.176e9)
+        member.update_A(0.00625)
     members[0].start_node.support = "Fix"
     members[0].start_node.Fx = "Rx"
     members[0].start_node.Fy = "Ry"
@@ -680,7 +679,9 @@ def pre_def():
     members[4].end_node.Fx = "Rx"
     members[4].end_node.Fy = "Ry"
     members[4].end_node.Mu = "Mu"
-    members[2].uvl.append(loads.Dist_Load(1, 'udl', 10, 10, 290, 2, 15, members[2]))
+    members[2].uvl.append(loads.Dist_Load(1, 'uvl', 10, 17, 270, 3, 6, members[2]))
+    point_Of_Force = calculate_force_point(members[5].start_node.screen, members[5].angle, 24)
+    members[5].point_forces.append(loads.Point_Force(1, members[5].start_node, 270, 24, 29, point_Of_Force))
     
     return members
 
@@ -693,9 +694,9 @@ def pre_def2():
     nodes = [Node(1, node1), Node(2, node2), Node(3, node3), Node(4, node4)]
     members = [Member(1, nodes[0], nodes[1], YELLOW), Member(2, nodes[1], nodes[2], YELLOW), Member(3, nodes[2], nodes[3], YELLOW)]
     for member in members:
-        member.update_I(0.0001)
+        member.update_I(0.0833)
         member.update_E(2E11)
-        member.update_A(0.05)
+        member.update_A(1)
     members[0].start_node.support = "Fix"
     members[0].start_node.Fx = "Rx"
     members[0].start_node.Fy = "Ry"
@@ -704,8 +705,8 @@ def pre_def2():
     members[2].end_node.Fx = "Rx"
     members[2].end_node.Fy = "Ry"
     members[2].end_node.Mu = "Mu"
-    # members[1].uvl.append(loads.Dist_Load(1, 'uvl', 10, 5, 290, 4, 10, members[1]))
-    screen_cood = calculate_force_point(members[1].start_node.screen, members[1].angle, 5)
+    members[1].uvl.append(loads.Dist_Load(1, 'uvl', 10, 5, 270, 4, 10, members[1]))
+    # screen_cood = calculate_force_point(members[1].start_node.screen, members[1].angle, 5)
     # members[1].moment.append(loads.Moment(10, 10, 5, screen_cood))
     return members
 
@@ -728,14 +729,10 @@ def make_buttons(button_text, sub_button_texts):
     return main_buttons
 
 def check_definite(support_string_arr):
-    # if len(members) > 0:
-    # print(f"len of members {len(members)}")
-    # print(f"supports {support_string_arr}")
     definite = False
     if "Fix" in support_string_arr:
         definite = True
         return definite
-    
     
     if support_string_arr.count("Pin") > 0 and support_string_arr.count("Roller") > 0:
         definite = True
@@ -753,6 +750,29 @@ def add_udl(active, _members):
     
     active_member = active
     members = _members
+    
+    def on_dropdown_change(event):
+        update_text()
+        update_blur()
+    
+    def on_entry_change(event):
+        try:
+            float(mag_text_var.get())
+            float(angle_text_var.get())
+            float(a_text_var.get())
+            float(b_text_var.get())
+            button.config(state="normal")
+        except ValueError:
+            button.config(state="disabled")
+
+    def update_blur():
+        selected_option = dropdown_var.get()
+        if selected_option == "Add New UDL":
+            delete_button.config(state="disabled")
+        else:
+            delete_button.config(state="normal")
+
+    
     # Create a new tkinter window each time Enter is pressed
     root = tk.Tk()
     root.title(f"Add/Edit UDL to Member {active_member.id}")
@@ -761,10 +781,16 @@ def add_udl(active, _members):
     for force in active_member.udl:
         options.append(f"Edit UDL no {force.no}")
     
-    dropdown = tk.StringVar(root)
-    dropdown.set(options[0])  # Set the default option
-    dropdown_menu = tk.OptionMenu(root, dropdown, *options)
-    dropdown_menu.grid(row=0, column=1)
+    # Create a StringVar to store the selected option
+    dropdown_var = tk.StringVar(root)
+    
+    # Create the dropdown menu with more options
+    dropdown = ttk.Combobox(root, textvariable=dropdown_var, values=options, state="readonly")
+    dropdown.grid(row=0, column=1)
+    dropdown.set("Add New UDL")  # Set the default selected value
+    
+    # Bind the dropdown to a function that gets called when the selection changes
+    dropdown.bind("<<ComboboxSelected>>", on_dropdown_change)
     
     #String Vars
     mag_text_var = tk.StringVar(root)
@@ -772,14 +798,17 @@ def add_udl(active, _members):
     a_text_var = tk.StringVar(root)
     b_text_var = tk.StringVar(root)
     
-    
-    #Sample
-    # text_entry = tk.Entry(root, textvariable=text_var, state="normal", width=20)
-    
+    # Define the Entries
     entry1 = tk.Entry(root, textvariable=mag_text_var, state="normal", width=20)
     entry2 = tk.Entry(root, textvariable=angle_text_var, state="normal", width=20)
     entry3 = tk.Entry(root, textvariable=a_text_var, state="normal", width=20)
     entry4 = tk.Entry(root, textvariable=b_text_var, state="normal", width=20)
+    
+    # Bind the entry to a function that gets called when its content changes
+    entry1.bind("<KeyRelease>", on_entry_change)
+    entry2.bind("<KeyRelease>", on_entry_change)
+    entry3.bind("<KeyRelease>", on_entry_change)
+    entry4.bind("<KeyRelease>", on_entry_change)
     
     #Magnitude Setting
     label1 = tk.Label(root, text="Magnitude:")
@@ -822,6 +851,13 @@ def add_udl(active, _members):
             angle = round(float(_angle),3)
             a = round(float(a_text),3)
             b = round(float(b_text),3)
+            if a > active_member.length:
+                messagebox.showinfo("Error", "Ta che kam start Location raku um agha da member na bahar razi, merabani uka sam ye ka.")
+                return
+            if a+b > active_member.length:
+                b = active_member.length-a
+                messagebox.showinfo("Error", "Ta che kam start ao end Location raku da aghy pa hisab khu da force member na bahar khatmegi, za ye darta pa member khatmom. Merabani.")
+            
             if active_force == None:
                 no = len(active_member.udl)+1
                 active_member.udl.append(loads.Dist_Load(no, 'udl', magnitude, magnitude, angle, a, b, active_member))
@@ -830,46 +866,52 @@ def add_udl(active, _members):
                 active_force.start_mag = magnitude
                 active_force.end_mag = magnitude
                 active_force.angle = angle
-                active_force.a = a
-                active_force.b = b
+                active_force.a_distance = a
+                active_force.b_distance = b
 
         except ValueError:
             pass
         root.destroy()  # Close the tkinter window
         
-        # print("UDL Added")
     
     def update_text():
         global first_run, active_force
         selected_option = dropdown.get()
-        if selected_option == "Add new UDL":
+        if selected_option == "Add New UDL":
             active_force = None
             mag_text_var.set(f"")
             angle_text_var.set(f"")
             a_text_var.set(f"")
+            b_text_var.set(f"")
         else:
-            if first_run:
-                mag_text_var.set(f"")
-                angle_text_var.set(f"")
-                a_text_var.set(f"")
-            else:      
-                active_force = active_member.udl[int(selected_option.split(" ")[-1])-1]
-                mag_text_var.set(f"{active_force.mag}")
-                angle_text_var.set(f"{active_force.angle}")
-                a_text_var.set(f"{active_force.a}")
-            first_run = False
+            active_force = active_member.udl[int(selected_option.split(" ")[-1])-1]
+            mag_text_var.set(f"{active_force.start_mag}")
+            angle_text_var.set(f"{active_force.angle}")
+            a_text_var.set(f"{active_force.a_distance}")
+            b_text_var.set(f"{active_force.b_distance}")
 
     
     # Initial text update
-    first_run = True
     update_text()
     
-    # Update text when dropdown changes
-    dropdown.trace('w', lambda *args: update_text())
+    def delete_force():
+        global active_member
+        selected_option = dropdown.get()
+        if selected_option != "Add New UDL":    
+            active_force = active_member.udl[int(selected_option.split(" ")[-1])-1]
+            active_member.udl.remove(active_force)
+            active_member.draw(screen)
+            root.destroy()
     
-    # Button Setting
-    button = Button(root, text="Add Force", command=update_udl)
-    button.grid(row=5, column=1)
+    #Add Button Setting
+    button = Button(root, text="Add UDL", command=update_udl, state="disabled")
+    button.grid(row=5, column=0)
+    
+    #Delete Button Setting
+    delete_button = Button(root, text="Delete UDL", command=delete_force)
+    delete_button.grid(row=5, column=1)
+    update_blur()
+    
     root.mainloop()
     # return
 
@@ -878,18 +920,48 @@ def add_uvl(active, _members):
     
     active_member = active
     members = _members
+    
+    def on_dropdown_change(event):
+        update_text()
+        update_blur()
+    
+    def on_entry_change(event):
+        try:
+            float(start_mag_text_var.get())
+            float(end_mag_text_var.get())
+            float(angle_text_var.get())
+            float(a_text_var.get())
+            float(b_text_var.get())
+            button.config(state="normal")
+        except ValueError:
+            button.config(state="disabled")
+
+    def update_blur():
+        selected_option = dropdown_var.get()
+        if selected_option == "Add New UVL":
+            delete_button.config(state="disabled")
+        else:
+            delete_button.config(state="normal")
+
+    
     # Create a new tkinter window each time Enter is pressed
     root = tk.Tk()
     root.title(f"Add/Edit UVL to Member {active_member.id}")
 
     options = ["Add New UVL"]
-    for force in active_member.uvl:
+    for force in active_member.udl:
         options.append(f"Edit UVL no {force.no}")
     
-    dropdown = tk.StringVar(root)
-    dropdown.set(options[0])  # Set the default option
-    dropdown_menu = tk.OptionMenu(root, dropdown, *options)
-    dropdown_menu.grid(row=0, column=1)
+    # Create a StringVar to store the selected option
+    dropdown_var = tk.StringVar(root)
+    
+    # Create the dropdown menu with more options
+    dropdown = ttk.Combobox(root, textvariable=dropdown_var, values=options, state="readonly")
+    dropdown.grid(row=0, column=1)
+    dropdown.set(options[0])  # Set the default selected value
+    
+    # Bind the dropdown to a function that gets called when the selection changes
+    dropdown.bind("<<ComboboxSelected>>", on_dropdown_change)
     
     #String Vars
     start_mag_text_var = tk.StringVar(root)
@@ -898,15 +970,19 @@ def add_uvl(active, _members):
     a_text_var = tk.StringVar(root)
     b_text_var = tk.StringVar(root)
     
-    
-    #Sample
-    # text_entry = tk.Entry(root, textvariable=text_var, state="normal", width=20)
-    
+    # Define the Entries
     entry1 = tk.Entry(root, textvariable=start_mag_text_var, state="normal", width=20)
     entry2 = tk.Entry(root, textvariable=end_mag_text_var, state="normal", width=20)
     entry3 = tk.Entry(root, textvariable=angle_text_var, state="normal", width=20)
     entry4 = tk.Entry(root, textvariable=a_text_var, state="normal", width=20)
     entry5 = tk.Entry(root, textvariable=b_text_var, state="normal", width=20)
+    
+    # Bind the entry to a function that gets called when its content changes
+    entry1.bind("<KeyRelease>", on_entry_change)
+    entry2.bind("<KeyRelease>", on_entry_change)
+    entry3.bind("<KeyRelease>", on_entry_change)
+    entry4.bind("<KeyRelease>", on_entry_change)
+    entry5.bind("<KeyRelease>", on_entry_change)
     
     # Start Magnitude Setting
     label1 = tk.Label(root, text="Start Magnitude:")
@@ -941,9 +1017,8 @@ def add_uvl(active, _members):
     label5.grid(row=5, column=0)
     entry5.grid(row=5, column=1)
     unit5 = tk.Label(root, text="Feet")
-    unit5.grid(row=5, column=2)
-    
-    
+    unit5.grid(row=5, column=2)    
+        
     def update_uvl():
         global active_member
         _start_magnitude = entry1.get()
@@ -958,6 +1033,14 @@ def add_uvl(active, _members):
             angle = round(float(_angle),3)
             a = round(float(a_text),3)
             b = round(float(b_text),3)
+            
+            if a > active_member.length:
+                messagebox.showinfo("Error", "Ta che kam start Location raku um agha da member na bahar razi, merabani uka sam ye ka.")
+                return
+            if a+b > active_member.length:
+                b = active_member.length-a
+                messagebox.showinfo("Error", "Ta che kam start ao end Location raku da aghy pa hisab khu da force member na bahar khatmegi, za ye darta pa member khatmom. Merabani.")
+            
             if active_force == None:
                 no = len(active_member.uvl)+1
                 active_member.uvl.append(loads.Dist_Load(no, 'uvl', start_magnitude, end_magnitude, angle, a, b, active_member))
@@ -972,44 +1055,45 @@ def add_uvl(active, _members):
         except ValueError:
             pass
         root.destroy()  # Close the tkinter window
-        
-        # print("UDL Added")
     
     def update_text():
-        global first_run, active_force
+        global active_force
         selected_option = dropdown.get()
-        if selected_option == "Add new UVL":
+        if selected_option == "Add New UVL":
             active_force = None
             start_mag_text_var.set(f"")
             end_mag_text_var.set(f"")
             angle_text_var.set(f"")
             a_text_var.set(f"")
         else:
-            if first_run:
-                start_mag_text_var.set(f"")
-                end_mag_text_var.set(f"")
-                angle_text_var.set(f"")
-                a_text_var.set(f"")
-            else:      
-                active_force = active_member.uvl[int(selected_option.split(" ")[-1])-1]
-                start_mag_text_var.set(f"{active_force.start_mag}")
-                end_mag_text_var.set(f"{active_force.end_mag}")
-                angle_text_var.set(f"{active_force.angle}")
-                a_text_var.set(f"{active_force.a_distance}")
-                
-            first_run = False
-
+            active_force = active_member.uvl[int(selected_option.split(" ")[-1])-1]
+            start_mag_text_var.set(f"{active_force.start_mag}")
+            end_mag_text_var.set(f"{active_force.end_mag}")
+            angle_text_var.set(f"{active_force.angle}")
+            a_text_var.set(f"{active_force.a_distance}")
     
     # Initial text update
-    first_run = True
     update_text()
     
-    # Update text when dropdown changes
-    dropdown.trace('w', lambda *args: update_text())
+    def delete_force():
+        global active_member
+        selected_option = dropdown.get()
+        if selected_option != "Add New UVL":    
+            active_force = active_member.uvl[int(selected_option.split(" ")[-1])-1]
+            active_member.uvl.remove(active_force)
+            active_member.draw(screen)
+            root.destroy()
     
-    # Button Setting
-    button = Button(root, text="Add UVL", command=update_uvl)
-    button.grid(row=6, column=1)
+    # Add Button Setting
+    button = Button(root, text="Add UVL", command=update_uvl, state="disabled")
+    button.grid(row=6, column=0)
+    
+    #Delete Button Setting
+    delete_button = Button(root, text="Delete UVL", command=delete_force)
+    delete_button.grid(row=6, column=1)
+    
+    update_blur()
+    
     root.mainloop()
     # return
 
@@ -1019,66 +1103,91 @@ def add_moment(active, _members):
     active_member = active
     active_force = None
     members = _members
-    # Create a new tkinter window each time Enter is pressed
+    
+    def on_dropdown_change(event):
+        update_text()
+        update_blur()
+    
+    def on_entry_change(event):
+        try:
+            float(mag_text_var.get())
+            float(loc_text_var.get())
+            button.config(state="normal")
+        except ValueError:
+            button.config(state="disabled")
+
+    def update_blur():
+        selected_option = dropdown_var.get()
+        if selected_option == "Add New Moment":
+            delete_button.config(state="disabled")
+        else:
+            delete_button.config(state="normal")
+
+    # Create the main window
     root = tk.Tk()
-    root.title(f"Add/Edit Moment to Member {active_member.id}")
+    root.title("Moment Selector")
 
     options = ["Add New Moment"]
     for force in active_member.moment:
         options.append(f"Edit Moment no {force.no}")
     
-    dropdown = tk.StringVar(root)
-    dropdown.set(options[0])  # Set the default option
-    dropdown_menu = tk.OptionMenu(root, dropdown, *options)
-    dropdown_menu.grid(row=0, column=1)
+    # Create a StringVar to store the selected option
+    dropdown_var = tk.StringVar()
+    
+    # Create the dropdown menu with more options
+    dropdown = ttk.Combobox(root, textvariable=dropdown_var, values=options, state="readonly")
+    dropdown.grid(row=0, column=1)
+    dropdown.set(options[0])  # Set the default selected value
+    
+    # Bind the dropdown to a function that gets called when the selection changes
+    dropdown.bind("<<ComboboxSelected>>", on_dropdown_change)
     
     #String Vars
     mag_text_var = tk.StringVar(root)
     loc_text_var = tk.StringVar(root)
-    
-    #Sample
-    # text_entry = tk.Entry(root, textvariable=text_var, state="normal", width=20)
 
     entry1 = tk.Entry(root, textvariable=mag_text_var, state="normal", width=20)
     entry2 = tk.Entry(root, textvariable=loc_text_var, state="normal", width=20)
 
+    # Bind the entry to a function that gets called when its content changes
+    entry1.bind("<KeyRelease>", on_entry_change)
+    entry2.bind("<KeyRelease>", on_entry_change)
 
     label1 = tk.Label(root, text="Magnitude:")
     label1.grid(row=1, column=0)
     entry1.grid(row=1, column=1)
     unit1 = tk.Label(root, text="N-ft")
     unit1.grid(row=1, column=2)
-
     
-    label2 = tk.Label(root, text="Distance from A:")
+    label2 = tk.Label(root, text="Distance from Point A:")
     label2.grid(row=2, column=0)
     entry2.grid(row=2, column=1)
-    unit2 = tk.Label(root, text="Degree")
+    unit2 = tk.Label(root, text="ft")
     unit2.grid(row=2, column=2)
     
     def update_text():
         global first_run, active_force
-        selected_option = dropdown.get()
-        if selected_option == "Add new Moment":
+        selected_option = dropdown_var.get()
+        if selected_option == options[0]:
             active_force = None
             mag_text_var.set(f"")
             loc_text_var.set(f"")
-        else:
-            if first_run:
-                mag_text_var.set(f"")
-                loc_text_var.set(f"")
-            else:      
-                active_force = active_member.moment[int(selected_option.split(" ")[-1])-1]
-                mag_text_var.set(f"{active_force.magnitude}")
-                loc_text_var.set(f"{active_force.loc}")
-            first_run = False
-
+        else:     
+            active_force = active_member.moment[int(selected_option.split(" ")[-1])-1]
+            mag_text_var.set(f"{active_force.magnitude}")
+            loc_text_var.set(f"{active_force.loc}")
+    
     # Initial text update
-    first_run = True
     update_text()
     
-    # Update text when dropdown changes
-    dropdown.trace('w', lambda *args: update_text())
+    def delete_moment():
+        global active_member
+        selected_option = dropdown.get()
+        if selected_option != options[0]:    
+            active_force = active_member.moment[int(selected_option.split(" ")[-1])-1]
+            active_member.moment.remove(active_force)
+            active_member.draw(screen)
+            root.destroy()
 
     def update_moment():
         global active_member
@@ -1096,7 +1205,6 @@ def add_moment(active, _members):
                 no = len(active_member.moment)+1
                 point_Of_Force = calculate_force_point(active_member.start_node.screen, active_member.angle, distFromA)
                 active_member.moment.append(loads.Moment(no, magnitude, distFromA, point_Of_Force))
-                # active_member.calculate_FER()
             else:
                 active_force.magnitude = magnitude
                 active_force.loc = distFromA
@@ -1106,7 +1214,17 @@ def add_moment(active, _members):
             pass
         root.destroy()  # Close the tkinter window
 
-    button = Button(root, text="Add Moment", command=update_moment)
-    button.grid(row=3, column=1)
-
+    #Add Force Button
+    button = Button(root, text="Add Force", command=update_moment, state="disabled")
+    button.grid(row=3, column=0)
+    
+    # Create a delete_button
+    delete_button = tk.Button(root, text="Delete Force", command=delete_moment)
+    delete_button.grid(row=3, column=1)
+    
+    # Update the delete_button state initially
+    update_blur()
+    
     root.mainloop()  # Start the tkinter mainloop for this window
+
+    

@@ -14,7 +14,7 @@ sub_members = []
 class Reaction:
     def __init__(self, _type, magnitude, node):
         self.type = _type
-        self.magnitude = round(magnitude,3)
+        self.magnitude = round(magnitude,2)
         self.node = node      
         self.color = (0, 255, 0)
         self.arrow_length = 50
@@ -46,7 +46,6 @@ class Reaction:
         screen.blit(text_surface, text_rect)
 
     def get_angle(self):
-        angle = 0
         if self.type == "Rx": 
             if self.magnitude >= 0:
                 angle = 0
@@ -92,7 +91,6 @@ class Reaction:
                 text_rect.midright = (start_x, start_y)
                 if angle == 180:
                     text_rect.midleft = (start_x, start_y)
-
                 # Draw the text
                 screen.blit(text_surface, text_rect)
         if self.type == "Mu":
@@ -231,16 +229,16 @@ def calculations(nodes, members, _GLOBAL_CENTER, _GLOBAL_SCALE):
     GLOBAL_CENTER = _GLOBAL_CENTER
     GLOBAL_SCALE = _GLOBAL_SCALE
     
-    reset(members)
+    # reset(members)
     
-    develop_sub_nodes(nodes, members)
-    develop_sub_members(members)
+    # develop_sub_nodes(nodes, members)
+    # develop_sub_members(members)
     
     # [print(f"sub member {member.id} \nstart node {member.start_node.sub_id} \nend node {member.end_node.sub_id} \nlength {member.length} \nAngle {member.angle}") for member in sub_members]
     [member.finalize_calcs() for member in sub_members]
     [member.finalize_calcs() for member in members]
-    nodes = sub_nodes
-    members = sub_members
+    # nodes = sub_nodes
+    # members = sub_members
     dof = 1
     allDel = []
     for node in nodes:

@@ -32,6 +32,7 @@ aF.transfer_vars(GLOBAL_SCALE, GLOBAL_CENTER, HEIGHT)
 
 # Create the main screen
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
+aF.screen = screen
 pygame.display.set_caption("Structural Analysis by Me for Me")
 
 # Create the info screen to the left
@@ -178,7 +179,6 @@ def update_info_screen():
             for i, line in enumerate(lines):
                 text_line = font.render(line, True, text_color)
                 info_screen.blit(text_line, (10, 10 + i * 30))
-            
             return active_member
     
     elif scene == 3:
@@ -725,9 +725,9 @@ while running:
             elif event.key == pygame.K_F2:
                 members = aF.pre_def2()
                 aF.GLOBAL_SCALE = GLOBAL_SCALE
-                reactions = cL.calculations(aF.nodes, members)
-                scene = 999
-                calcs_done = True
+                # reactions = cL.calculations(aF.nodes, members)
+                # scene = 999
+                # calcs_done = True
             
                 
 
