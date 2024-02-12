@@ -257,7 +257,7 @@ class Member:
         rbx, rby = transform_force(rby, rbx)
 
         self.FER = np.array([rax, ray, ma, rbx, rby, mb], dtype=float)
-    
+            
 
     def display_id(self, screen):
         # Create a font
@@ -619,7 +619,9 @@ def add_point_forces(active, _members):
             if distFromA > active_member.length:
                 distFromA = active_member.length
                 messagebox.showinfo("Error", "Ta che kam Location raku da aghy pa hisab sta da force da member na bahar rauzi, za ye darta pa gut ke lagom, bya ye pakhpala edit kawa. Merabani.")
-
+            if distFromA < 0:
+                messagebox.showinfo("Error", "Marra da ta us sa ky. Distance negative sanga kedyshi. Da uss sahi ka. Merabani.")
+                return
             if active_force == None:
                 no = len(active_member.point_forces)+1
                 point_Of_Force = calculate_force_point(active_member.start_node.screen, active_member.angle, distFromA)
@@ -655,37 +657,31 @@ def calculate_force_point(start, angle, dist):
 
     return (x, y)
 
-def pre_def():
+def pre_def2():
     global nodes
-    start_x = 400
-    start_y = 450
-    node1 = (start_x, start_y)
-    node2 = (start_x-50, start_y-200)
-    node3 = (start_x, start_y-400)
-    node4 = (start_x+200, start_y-400)
-    node5 = (start_x+250, start_y-200)
-    node6 = (start_x+200, start_y)
-    nodes = [Node(1, node1), Node(2, node2), Node(3, node3), Node(4, node4), Node(5, node5), Node(6, node6)]
-    members = [Member(1, nodes[0], nodes[1], YELLOW), Member(2, nodes[1], nodes[2], YELLOW), Member(3, nodes[2], nodes[3], YELLOW), Member(4, nodes[3], nodes[4], YELLOW), Member(5, nodes[4], nodes[5], YELLOW), Member(6, nodes[1], nodes[4], YELLOW)]
+    node1 = (400, 400)
+    node2 = (600, 400)
+    nodes = [Node(1, node1), Node(2, node2)]
+    members = [Member(1, nodes[0], nodes[1], YELLOW)]
     for member in members:
-        member.update_I(3.255e-4)
-        member.update_E(4.176e9)
-        member.update_A(0.00625)
-    members[0].start_node.support = "Fix"
-    members[0].start_node.Fx = "Rx"
+        member.update_I(0.0833)
+        member.update_E(2E11)
+        member.update_A(1)
+    members[0].start_node.support = "Roller"
+    # members[0].start_node.Fx = "Rx"
     members[0].start_node.Fy = "Ry"
-    members[0].start_node.Mu = "Mu"
-    members[4].end_node.support = "Fix"
-    members[4].end_node.Fx = "Rx"
-    members[4].end_node.Fy = "Ry"
-    members[4].end_node.Mu = "Mu"
-    members[2].uvl.append(loads.Dist_Load(1, 'uvl', 10, 17, 270, 3, 6, members[2]))
-    point_Of_Force = calculate_force_point(members[5].start_node.screen, members[5].angle, 24)
-    members[5].point_forces.append(loads.Point_Force(1, members[5].start_node, 270, 24, 29, point_Of_Force))
+    # members[0].start_node.Mu = "Mu"
+    members[0].end_node.support = "Pin"
+    members[0].end_node.Fx = "Rx"
+    members[0].end_node.Fy = "Ry"
+    # members[0].end_node.Mu = "Mu"
+    members[0].uvl.append(loads.Dist_Load(1, 'uvl', 10, 5, 270, 4, 10, members[0]))
+    # screen_cood = calculate_force_point(members[1].start_node.screen, members[1].angle, 5)
+    # members[1].moment.append(loads.Moment(10, 10, 5, screen_cood))
     
     return members
 
-def pre_def2():
+def pre_def():
     global nodes
     node1 = (400, 400)
     node2 = (400, 200)
@@ -705,9 +701,10 @@ def pre_def2():
     members[2].end_node.Fx = "Rx"
     members[2].end_node.Fy = "Ry"
     members[2].end_node.Mu = "Mu"
-    members[1].uvl.append(loads.Dist_Load(1, 'uvl', 10, 5, 270, 4, 10, members[1]))
-    # screen_cood = calculate_force_point(members[1].start_node.screen, members[1].angle, 5)
-    # members[1].moment.append(loads.Moment(10, 10, 5, screen_cood))
+    # members[1].uvl.append(loads.Dist_Load(1, 'uvl', 10, 5, 270, 4, 10, members[1]))
+    point_Of_Force = calculate_force_point(members[1].start_node.screen, members[1].angle, 0)
+    members[1].point_forces.append(loads.Point_Force(1, members[1].start_node, 270, 0, 50, point_Of_Force))
+    
     return members
 
 def make_buttons(button_text, sub_button_texts):
@@ -857,6 +854,10 @@ def add_udl(active, _members):
             if a+b > active_member.length:
                 b = active_member.length-a
                 messagebox.showinfo("Error", "Ta che kam start ao end Location raku da aghy pa hisab khu da force member na bahar khatmegi, za ye darta pa member khatmom. Merabani.")
+            
+            if a < 0 or b < 0:
+                messagebox.showinfo("Error", "Marra da ta us sa ky. Distance negative sanga kedyshi. Da uss sahi ka. Merabani.")
+                return
             
             if active_force == None:
                 no = len(active_member.udl)+1
@@ -1041,6 +1042,10 @@ def add_uvl(active, _members):
                 b = active_member.length-a
                 messagebox.showinfo("Error", "Ta che kam start ao end Location raku da aghy pa hisab khu da force member na bahar khatmegi, za ye darta pa member khatmom. Merabani.")
             
+            if a < 0 or b < 0:
+                messagebox.showinfo("Error", "Marra da ta uss sa ky. Distance negative sanga kedyshi. Da uss sahi ka. Merabani.")
+                return
+            
             if active_force == None:
                 no = len(active_member.uvl)+1
                 active_member.uvl.append(loads.Dist_Load(no, 'uvl', start_magnitude, end_magnitude, angle, a, b, active_member))
@@ -1200,6 +1205,10 @@ def add_moment(active, _members):
             if distFromA > active_member.length:
                 distFromA = active_member.length
                 messagebox.showinfo("Error", "Ta che kam Location raku da aghy pa hisab sta da moment da member na bahar rauzi, za ye darta pa gut ke lagom, bya ye pakhpala edit kawa. Merabani.")
+
+            if distFromA < 0:
+                messagebox.showinfo("Error", "Marra da ta uss sa ky. Distance negative sanga kedyshi. Da uss sahi ka. Merabani.")
+                return
 
             if active_force == None:
                 no = len(active_member.moment)+1

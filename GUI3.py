@@ -752,13 +752,8 @@ while running:
         if scene == 999:
             [member.draw(screen) for member in members]
             [node.draw(screen) for node in aF.nodes]
-            # if len(cL.sub_members) > 0:
-            #     [member.draw(screen) for member in cL.sub_members]
             if len(reactions) > 0:
                 [reaction.draw(screen) for reaction in reactions]
-            # if len(cL.sub_nodes) > 0:
-            #     [node.draw(screen) for node in cL.sub_nodes]
-
             if scene != 999:
                 calcs_done = False
     

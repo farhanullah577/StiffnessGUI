@@ -48,23 +48,23 @@ class Reaction:
     def get_angle(self):
         if self.type == "Rx": 
             if self.magnitude >= 0:
-                angle = 0
+                return 0
             else:
-                angle = 180
+                return 180
         elif self.type == "Ry":
             if self.magnitude >= 0:
-                angle = 90
+                return 90
             else:
-                angle = 270
+                return 270
         elif self.type == "Mu":
-            angle = 45
+            return "Mu"
         
-        return angle
+        
 
     def draw(self, screen):
         if self.type == "Rx" or "Ry":
             angle = self.get_angle()
-            if angle != 45:
+            if angle != "Mu":
                 arrow_head_width = 10
 
                 # Calculate the start point for the arrow
@@ -229,16 +229,19 @@ def calculations(nodes, members, _GLOBAL_CENTER, _GLOBAL_SCALE):
     GLOBAL_CENTER = _GLOBAL_CENTER
     GLOBAL_SCALE = _GLOBAL_SCALE
     
-    # reset(members)
-    
-    # develop_sub_nodes(nodes, members)
-    # develop_sub_members(members)
-    
-    # [print(f"sub member {member.id} \nstart node {member.start_node.sub_id} \nend node {member.end_node.sub_id} \nlength {member.length} \nAngle {member.angle}") for member in sub_members]
+    # [member.finalize_calcs() for member in members]
+    """ Uncomment if sub-division """
+    reset(members)
+    develop_sub_nodes(nodes, members)
+    develop_sub_members(members)
     [member.finalize_calcs() for member in sub_members]
-    [member.finalize_calcs() for member in members]
-    # nodes = sub_nodes
-    # members = sub_members
+    nodes = sub_nodes
+    members = sub_members
+    
+    for member in members:
+        print(f"Member {member.id}:\nLenght={member.length} \nAngle={member.angle}")  
+    
+    
     dof = 1
     allDel = []
     for node in nodes:
@@ -258,14 +261,11 @@ def calculations(nodes, members, _GLOBAL_CENTER, _GLOBAL_SCALE):
             col = 0
             for k in deltasArr:
                 new[j - 1, k - 1] = member.stiffness[row, col]
-                y = pd.DataFrame(new)
                 col += 1
             row += 1
-        # print(f"new = {new}")
         str_stiffness += new
         str_stiffness = np.matrix(str_stiffness)
     
-    # print(f"str_stiffness = \n{str_stiffness}")
        
     # Make the joint FER matrix
     joint = np.array([0] * len(allDel), dtype=float)
@@ -280,26 +280,21 @@ def calculations(nodes, members, _GLOBAL_CENTER, _GLOBAL_SCALE):
             count += 1
         f += 1
 
-    # print(f"new = \n{new}")
-
     for i in new:
         joint += i
-    # print(f"joint = \n{joint}")
 
     # Reactions
     Reactions_def = []
     P = []
     for node in nodes:
         Pi = [node.Fx, node.Fy, node.Mu]
-        # print(f"Pi = {Pi}")
         P += Pi
         for i in range(len(Pi)):
             if Pi[i] == 'Rx' or Pi[i] == 'Ry' or Pi[i] == 'Mu':
                 # Reactions_def.append(f"{P[i]} at node {node.id}")
-                Reactions_def.append((P[i], node))
+                Reactions_def.append((Pi[i], node))
     
-    # print(f"P = {P}")
-    forces = []
+    # forces = []
     pk = []
     ind = []
     other = []
@@ -331,15 +326,11 @@ def calculations(nodes, members, _GLOBAL_CENTER, _GLOBAL_SCALE):
             row += 1
 
     mat_mul = np.matrix(mat_mul)
-    # print(f"mat_mul \n = {mat_mul}")
 
     pk = np.matrix(pk)
-    # print(f"pk = {pk}")
 
     delta = np.linalg.inv(mat_mul).dot(pk.T)
-    # print(f"mat_mul Inverse : {np.linalg.inv(mat_mul)}")
-    # print(f"delta = {delta}")
-    # print(f"str_stiffness = {str_stiffness}")
+
     mat_mul = []
     row = 0
     for i in other:
@@ -350,7 +341,7 @@ def calculations(nodes, members, _GLOBAL_CENTER, _GLOBAL_SCALE):
         row += 1
 
     mat_mul = np.matrix(mat_mul)
-    # print(f"mat_mul2 = \n{mat_mul}")
+
     p = []
     for i in other:
         p.append(joint[i])
@@ -368,7 +359,6 @@ def calculations(nodes, members, _GLOBAL_CENTER, _GLOBAL_SCALE):
         typeOfReaction = Reactions_def[i][0]
         nodeOfReaction = Reactions_def[i][1]
         reaction_magnitude = result.iloc[i]
-        # reactions_arr.append(Reaction(typeOfReaction, reaction_magnitude, nodeOfReaction))
-        
+
         reactions_arr.append(Reaction(typeOfReaction, reaction_magnitude, nodeOfReaction))
     return reactions_arr
