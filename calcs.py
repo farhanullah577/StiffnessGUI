@@ -109,11 +109,7 @@ def find_sub_coods(member, node_arr):
         g_start_x, g_start_y = member.start_node.point
         x_s = s_start_x + (i * screen_increment * math.cos(math.radians(member.angle)))
         y_s = s_start_y - (i * screen_increment * math.sin(math.radians(member.angle)))
-        x_g = g_start_x + (i * global_increment * math.cos(math.radians(member.angle)))
-        y_g = g_start_y - (i * global_increment * math.sin(math.radians(member.angle)))
-        _sub_node = aF.Node(1, (x_s, y_s), "sub")
-        _sub_node.point = (x_g, y_g)
-        
+        _sub_node = aF.Node(1, (x_s, y_s), "sub") 
         member.sub_nodes.append(_sub_node)
     member.sub_nodes.append(member.end_node)
 
@@ -234,13 +230,18 @@ def calculations(nodes, members, _GLOBAL_CENTER, _GLOBAL_SCALE):
     reset(members)
     develop_sub_nodes(nodes, members)
     develop_sub_members(members)
-    [member.finalize_calcs() for member in sub_members]
+    
     nodes = sub_nodes
     members = sub_members
     
+    # [member.finalize_calcs() for member in sub_members]
     for member in members:
-        print(f"Member {member.id}:\nLenght={member.length} \nAngle={member.angle}")  
-    
+        member.finalize_calcs()
+        print(f"Member {member.id}:\nLenght={member.length} \nAngle={member.angle}\nstart={member.start_node.sub_id} {member.start_node.point}\nend={member.end_node.sub_id} {member.end_node.point}")
+        
+        if len(member.point_forces)>0:
+            print(f"{member.point_forces[0].mag} at {member.point_forces[0].loc}")  
+        print("\n")
     
     dof = 1
     allDel = []

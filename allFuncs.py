@@ -157,7 +157,7 @@ class Member:
         self.calc_transform_matrix()
         self.calc_k_matrix()
         self.stiffness = np.transpose(self.transform_matrix).dot(self.k_matrix).dot(self.transform_matrix)
-        self.FER = self.calculate_FER()
+        self.calculate_FER()
 
     def calc_transform_matrix(self):
         l = math.cos(math.radians(self.angle))
@@ -682,11 +682,12 @@ def pre_def2():
     return members
 
 def pre_def():
-    global nodes
+    global nodes, GLOBAL_CENTER
     node1 = (400, 400)
     node2 = (400, 200)
     node3 = (600, 200)
     node4 = (600, 400)
+    GLOBAL_CENTER = (400, 400)
     nodes = [Node(1, node1), Node(2, node2), Node(3, node3), Node(4, node4)]
     members = [Member(1, nodes[0], nodes[1], YELLOW), Member(2, nodes[1], nodes[2], YELLOW), Member(3, nodes[2], nodes[3], YELLOW)]
     for member in members:
