@@ -205,6 +205,9 @@ def develop_sub_members(members):
     for member in members:
         for i in range(len(member.sub_nodes) - 1):
             sub_member = aF.Member(sub_mem_id, member.sub_nodes[i], member.sub_nodes[i+1], (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), sub=True)
+            sub_member.A = member.A
+            sub_member.I = member.I
+            sub_member.E = member.E
             member.sub_members.append(sub_member)
             sub_mem_id += 1
             sub_members.append(sub_member)
@@ -225,8 +228,7 @@ def calculations(nodes, members, _GLOBAL_CENTER, _GLOBAL_SCALE):
     GLOBAL_CENTER = _GLOBAL_CENTER
     GLOBAL_SCALE = _GLOBAL_SCALE
     
-    # [member.finalize_calcs() for member in members]
-    """ Uncomment if sub-division """
+    # """ Uncomment if sub-division """
     reset(members)
     develop_sub_nodes(nodes, members)
     develop_sub_members(members)
@@ -234,15 +236,8 @@ def calculations(nodes, members, _GLOBAL_CENTER, _GLOBAL_SCALE):
     nodes = sub_nodes
     members = sub_members
     
-    # [member.finalize_calcs() for member in sub_members]
-    for member in members:
-        member.finalize_calcs()
-        print(f"Member {member.id}:\nLenght={member.length} \nAngle={member.angle}\nstart={member.start_node.sub_id} {member.start_node.point}\nend={member.end_node.sub_id} {member.end_node.point}")
+    [member.finalize_calcs() for member in members]
         
-        if len(member.point_forces)>0:
-            print(f"{member.point_forces[0].mag} at {member.point_forces[0].loc}")  
-        print("\n")
-    
     dof = 1
     allDel = []
     for node in nodes:
@@ -256,7 +251,6 @@ def calculations(nodes, members, _GLOBAL_CENTER, _GLOBAL_SCALE):
         new = np.matrix([[0] * len(allDel)] * len(allDel), dtype=float)
         deltasArr = member.start_node.dof + member.end_node.dof
         member.dof = deltasArr
-        
         row = 0
         for j in deltasArr:
             col = 0
@@ -266,8 +260,7 @@ def calculations(nodes, members, _GLOBAL_CENTER, _GLOBAL_SCALE):
             row += 1
         str_stiffness += new
         str_stiffness = np.matrix(str_stiffness)
-    
-       
+          
     # Make the joint FER matrix
     joint = np.array([0] * len(allDel), dtype=float)
     new = []
@@ -292,9 +285,8 @@ def calculations(nodes, members, _GLOBAL_CENTER, _GLOBAL_SCALE):
         P += Pi
         for i in range(len(Pi)):
             if Pi[i] == 'Rx' or Pi[i] == 'Ry' or Pi[i] == 'Mu':
-                # Reactions_def.append(f"{P[i]} at node {node.id}")
                 Reactions_def.append((Pi[i], node))
-    
+
     # forces = []
     pk = []
     ind = []
@@ -315,7 +307,7 @@ def calculations(nodes, members, _GLOBAL_CENTER, _GLOBAL_SCALE):
 
         else:
             other.append(i)
-
+    
     mat_mul = []
     row = 0
     for i in range(len(str_stiffness)):

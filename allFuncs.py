@@ -658,26 +658,33 @@ def calculate_force_point(start, angle, dist):
     return (x, y)
 
 def pre_def2():
-    global nodes
+    global nodes, GLOBAL_CENTER
+    GLOBAL_CENTER = (400, 400)
     node1 = (400, 400)
-    node2 = (600, 400)
-    nodes = [Node(1, node1), Node(2, node2)]
-    members = [Member(1, nodes[0], nodes[1], YELLOW)]
+    node2 = (400, 300)
+    node3 = (400, 200)
+    node4 = (500, 200)
+    node5 = (600, 200)
+    node6 = (600, 300)
+    node7 = (600, 400)
+    
+    nodes = [Node(1, node1), Node(2, node2), Node(3, node3), Node(4, node4), Node(5, node5), Node(6, node6), Node(7, node7)]
+    members = [Member(1, nodes[0], nodes[1], YELLOW), Member(2, nodes[1], nodes[2], YELLOW), Member(3, nodes[2], nodes[3], YELLOW), Member(4, nodes[3], nodes[4], YELLOW), Member(5, nodes[4], nodes[5], YELLOW), Member(6, nodes[5], nodes[6], YELLOW)]
     for member in members:
         member.update_I(0.0833)
         member.update_E(2E11)
         member.update_A(1)
-    members[0].start_node.support = "Roller"
-    # members[0].start_node.Fx = "Rx"
+    members[0].start_node.support = "Fix"
+    members[0].start_node.Fx = "Rx"
     members[0].start_node.Fy = "Ry"
-    # members[0].start_node.Mu = "Mu"
-    members[0].end_node.support = "Pin"
-    members[0].end_node.Fx = "Rx"
-    members[0].end_node.Fy = "Ry"
-    # members[0].end_node.Mu = "Mu"
-    members[0].uvl.append(loads.Dist_Load(1, 'uvl', 10, 5, 270, 4, 10, members[0]))
-    # screen_cood = calculate_force_point(members[1].start_node.screen, members[1].angle, 5)
-    # members[1].moment.append(loads.Moment(10, 10, 5, screen_cood))
+    members[0].start_node.Mu = "Mu"
+    members[-1].end_node.support = "Fix"
+    members[-1].end_node.Fx = "Rx"
+    members[-1].end_node.Fy = "Ry"
+    members[-1].end_node.Mu = "Mu"
+    # members[1].uvl.append(loads.Dist_Load(1, 'uvl', 10, 5, 270, 4, 10, members[1]))
+    point_Of_Force = calculate_force_point(members[2].start_node.screen, members[2].angle, 0)
+    members[2].point_forces.append(loads.Point_Force(1, members[2].start_node, 270, 0, 50, point_Of_Force))
     
     return members
 
